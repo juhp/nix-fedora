@@ -2,7 +2,7 @@
 %global nixbld_group nix-builders
 
 Name:           nix
-Version:        1.11.4
+Version:        1.11.15
 Release:        1%{?dist}
 Summary:        Nix software deployment system
 
@@ -12,6 +12,7 @@ Source0:        http://nixos.org/releases/nix/nix-%{version}/nix-%{version}.tar.
 
 BuildRequires:  bzip2-devel
 BuildRequires:  libcurl-devel
+BuildRequires:  libseccomp-devel
 BuildRequires:  openssl-devel
 BuildRequires:  perl-devel
 BuildRequires:  perl(DBD::SQLite)
@@ -120,12 +121,12 @@ systemctl start  nix-daemon.service
 %{_prefix}/libexec/*
 %{_prefix}/lib/systemd/system/nix-daemon.socket
 %{_prefix}/lib/systemd/system/nix-daemon.service
-%{_datadir}/emacs/site-lisp/nix-mode.el
 %{_datadir}/nix
 %{_mandir}/man1/*.1*
 %{_mandir}/man5/*.5*
 %{_mandir}/man8/*.8*
 %config(noreplace) %{_sysconfdir}/profile.d/nix.sh
+%config(noreplace) %{_sysconfdir}/profile.d/nix-daemon.sh
 %dir /nix
 %attr(1775,root,%{nixbld_group}) /nix/store
 %dir /nix/var
