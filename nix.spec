@@ -2,7 +2,7 @@
 %global nixbld_group nix-builders
 
 Name:           nix
-Version:        1.11.15
+Version:        2.1
 Release:        1%{?dist}
 Summary:        Nix software deployment system
 
@@ -11,6 +11,8 @@ URL:            http://nixos.org/nix
 Source0:        http://nixos.org/releases/nix/nix-%{version}/nix-%{version}.tar.xz
 
 BuildRequires:  bzip2-devel
+BuildRequires:  boost-devel
+BuildRequires:  brotli-devel
 BuildRequires:  libcurl-devel
 BuildRequires:  libseccomp-devel
 BuildRequires:  openssl-devel
@@ -20,8 +22,6 @@ BuildRequires:  perl(ExtUtils::ParseXS)
 BuildRequires:  perl(WWW::Curl)
 BuildRequires:  sqlite-devel
 BuildRequires:  xz-devel
-BuildRequires:  emacs
-Requires:       emacs-filesystem >= %{_emacs_version}
 Obsoletes:      emacs-%{name} < %{version}-%{release}
 Obsoletes:      emacs-%{name}-el < %{version}-%{release}
 
@@ -64,7 +64,6 @@ The %{name}-doc package contains documentation files for %{name}.
 %undefine _hardened_build
 %configure --localstatedir=/nix/var --docdir=%{_defaultdocdir}/%{name}-doc-%{version}
 make %{?_smp_mflags}
-%{_emacs_bytecompile} misc/emacs/nix-mode.el
 
 
 %install
@@ -89,9 +88,6 @@ touch %{buildroot}/nix/var/nix/gc.lock
 # (until this is fixed in the relevant Makefile)
 chmod -x %{buildroot}%{_sysconfdir}/profile.d/nix.sh
 
-# Copy the byte-compiled mode file by hand
-cp -p misc/emacs/nix-mode.elc %{buildroot}%{_emacs_sitelispdir}/
-
 # Get rid of Upstart job.
 rm -r %{buildroot}%{_sysconfdir}/init
 
@@ -114,13 +110,11 @@ systemctl start  nix-daemon.service
 
 
 %files
-%{_bindir}/nix-*
+%{_bindir}/nix*
 %{_libdir}/*.so
-%{perl_vendorarch}/*
-%exclude %dir %{perl_vendorarch}/auto/
-%{_prefix}/libexec/*
 %{_prefix}/lib/systemd/system/nix-daemon.socket
 %{_prefix}/lib/systemd/system/nix-daemon.service
+%{_libexecdir}/nix
 %{_datadir}/nix
 %{_mandir}/man1/*.1*
 %{_mandir}/man5/*.5*
@@ -138,8 +132,6 @@ systemctl start  nix-daemon.service
 %attr(775,root,%{nixbld_group}) /nix/var/nix/temproots
 %attr(775,root,%{nixbld_group}) /nix/var/nix/db
 %attr(664,root,%{nixbld_group}) /nix/var/nix/gc.lock
-%{_emacs_sitelispdir}/*.el
-%{_emacs_sitelispdir}/*.elc
 
 
 %files devel
@@ -153,6 +145,10 @@ systemctl start  nix-daemon.service
 
 
 %changelog
+* Tue Sep  4 2018 Jens Petersen <petersen@redhat.com> - 2.1-1
+- update to 2.1
+- https://nixos.org/nix/manual/#ssec-relnotes-2.1
+
 * Wed Oct  5 2016 Jens Petersen <petersen@redhat.com> - 1.11.4-1
 - no longer subpackage the elisp
 - BR perl-devel
