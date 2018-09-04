@@ -13,13 +13,10 @@ Source0:        http://nixos.org/releases/nix/nix-%{version}/nix-%{version}.tar.
 BuildRequires:  bzip2-devel
 BuildRequires:  boost-devel
 BuildRequires:  brotli-devel
+BuildRequires:  gcc-c++
 BuildRequires:  libcurl-devel
 BuildRequires:  libseccomp-devel
 BuildRequires:  openssl-devel
-BuildRequires:  perl-devel
-BuildRequires:  perl(DBD::SQLite)
-BuildRequires:  perl(ExtUtils::ParseXS)
-BuildRequires:  perl(WWW::Curl)
 BuildRequires:  sqlite-devel
 BuildRequires:  xz-devel
 Obsoletes:      emacs-%{name} < %{version}-%{release}
@@ -53,11 +50,6 @@ The %{name}-doc package contains documentation files for %{name}.
 
 %prep
 %setup -q
-# Install Perl modules to vendor_perl
-# configure.ac need to be changed to make this global; however, this will
-# also affect NixOS. Use discretion.
-%{__sed} -i 's|perl5/site_perl/$perlversion/$perlarchname|perl5/vendor_perl|' \
-  configure
 
 
 %build
