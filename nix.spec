@@ -2,14 +2,13 @@
 %global nixbld_group nix-builders
 
 Name:           nix
-Version:        2.1
+Version:        2.3.7
 Release:        1%{?dist}
 Summary:        Nix software deployment system
 
 License:        LGPLv2+
-URL:            http://nixos.org/nix
-Source0:        http://nixos.org/releases/nix/nix-%{version}/nix-%{version}.tar.xz
-
+URL:            https://nixos.org/nix
+Source0:        https://nixos.org/releases/nix/nix-%{version}/nix-%{version}.tar.xz
 BuildRequires:  bzip2-devel
 BuildRequires:  boost-devel
 BuildRequires:  brotli-devel
@@ -97,8 +96,8 @@ done
 
 %post
 # Enable and start Nix worker
-systemctl enable nix-daemon.socket nix-daemon.service
-systemctl start  nix-daemon.service
+#systemctl enable nix-daemon.socket nix-daemon.service
+#systemctl start  nix-daemon.service
 
 
 %files
@@ -137,6 +136,10 @@ systemctl start  nix-daemon.service
 
 
 %changelog
+* Thu Aug  6 2020 Jens Petersen <petersen@redhat.com> - 2.3.7-1
+- update to 2.3.7
+- drop erroring systemd units for now
+
 * Tue Sep  4 2018 Jens Petersen <petersen@redhat.com> - 2.1-1
 - update to 2.1
 - https://nixos.org/nix/manual/#ssec-relnotes-2.1
