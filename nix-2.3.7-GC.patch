@@ -1,0 +1,25 @@
+--- nix-2.3.7/src/nix/repl.cc~	1970-01-01 07:30:01.000000000 +0730
++++ nix-2.3.7/src/nix/repl.cc	2020-08-06 20:38:36.922279838 +0800
+@@ -31,8 +31,10 @@
+ #include "command.hh"
+ #include "finally.hh"
+ 
++#if HAVE_BOEHMGC
+ #define GC_INCLUDE_NEW
+ #include <gc/gc_cpp.h>
++#endif
+ 
+ namespace nix {
+ 
+@@ -44,7 +46,10 @@
+ #define ESC_CYA "\033[36m"
+ #define ESC_END "\033[0m"
+ 
+-struct NixRepl : gc
++struct NixRepl
++    #if HAVE_BOEHMGC
++    : gc
++    #endif
+ {
+     string curDir;
+     EvalState state;

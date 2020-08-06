@@ -9,15 +9,20 @@ Summary:        Nix software deployment system
 License:        LGPLv2+
 URL:            https://nixos.org/nix
 Source0:        https://nixos.org/releases/nix/nix-%{version}/nix-%{version}.tar.xz
+# https://github.com/NixOS/nix/issues/3906
+Patch0:         nix-2.3.7-GC.patch
 BuildRequires:  bzip2-devel
 BuildRequires:  boost-devel
 BuildRequires:  brotli-devel
+BuildRequires:  editline-devel
+BuildRequires:  gc-devel
 BuildRequires:  gcc-c++
 BuildRequires:  libcurl-devel
 BuildRequires:  libseccomp-devel
 BuildRequires:  openssl-devel
 BuildRequires:  sqlite-devel
 BuildRequires:  xz-devel
+BuildRequires:  chrpath
 Obsoletes:      emacs-%{name} < %{version}-%{release}
 Obsoletes:      emacs-%{name}-el < %{version}-%{release}
 
@@ -48,7 +53,7 @@ The %{name}-doc package contains documentation files for %{name}.
 
 
 %prep
-%setup -q
+%autosetup -p1
 
 
 %build
@@ -81,6 +86,8 @@ chmod -x %{buildroot}%{_sysconfdir}/profile.d/nix.sh
 
 # Get rid of Upstart job.
 rm -r %{buildroot}%{_sysconfdir}/init
+
+chrpath --delete %{buildroot}%{_bindir}/nix %{buildroot}%{_libdir}/libnixexpr.so %{buildroot}%{_libdir}/libnixmain.so %{buildroot}%{_libdir}/libnixstore.so
 
 
 %pre
