@@ -1,9 +1,9 @@
-%global nixbld_user nix-builder-
-%global nixbld_group nix-builders
+%global nixbld_user nixbld-
+%global nixbld_group nixbld
 
 Name:           nix
 Version:        2.3.7
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Nix software deployment system
 
 License:        LGPLv2+
@@ -143,6 +143,9 @@ done
 
 
 %changelog
+* Fri Aug  7 2020 Jens Petersen <petersen@redhat.com> - 2.3.7-2
+- upstream renamed nix-builder group to nixbld
+
 * Thu Aug  6 2020 Jens Petersen <petersen@redhat.com> - 2.3.7-1
 - update to 2.3.7
 - drop erroring systemd units for now
