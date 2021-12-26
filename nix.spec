@@ -1,9 +1,6 @@
-%global nixbld_user nixbld-
-%global nixbld_group nixbld
-
 Name:           nix
 Version:        2.3.7
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Nix software deployment system
 
 License:        LGPLv2+
@@ -84,27 +81,12 @@ touch %{buildroot}/nix/var/nix/gc.lock
 # (until this is fixed in the relevant Makefile)
 chmod -x %{buildroot}%{_sysconfdir}/profile.d/nix.sh
 
+rm %{buildroot}%{_sysconfdir}/profile.d/nix-daemon.sh
+
 # Get rid of Upstart job.
 rm -r %{buildroot}%{_sysconfdir}/init
 
 chrpath --delete %{buildroot}%{_bindir}/nix %{buildroot}%{_libdir}/libnixexpr.so %{buildroot}%{_libdir}/libnixmain.so %{buildroot}%{_libdir}/libnixstore.so
-
-
-%pre
-getent group %{nixbld_group} >/dev/null || groupadd -r %{nixbld_group}
-for i in $(seq 10);
-do
-  getent passwd %{nixbld_user}$i >/dev/null || \
-    useradd -r -g %{nixbld_group} -G %{nixbld_group} -d /var/empty \
-      -s %{_sbindir}/nologin \
-      -c "Nix build user $i" %{nixbld_user}$i
-done
-
-
-%post
-# Enable and start Nix worker
-#systemctl enable nix-daemon.socket nix-daemon.service
-#systemctl start  nix-daemon.service
 
 
 %files
@@ -118,18 +100,7 @@ done
 %{_mandir}/man5/*.5*
 %{_mandir}/man8/*.8*
 %config(noreplace) %{_sysconfdir}/profile.d/nix.sh
-%config(noreplace) %{_sysconfdir}/profile.d/nix-daemon.sh
-%dir /nix
-%attr(1775,root,%{nixbld_group}) /nix/store
-%dir /nix/var
-%dir /nix/var/log
-%dir /nix/var/log/nix
-%attr(1775,root,%{nixbld_group}) %dir /nix/var/log/nix/drvs
-%dir %attr(775,root,%{nixbld_group}) /nix/var/nix
-%ghost /nix/var/nix/daemon-socket/socket
-%attr(775,root,%{nixbld_group}) /nix/var/nix/temproots
-%attr(775,root,%{nixbld_group}) /nix/var/nix/db
-%attr(664,root,%{nixbld_group}) /nix/var/nix/gc.lock
+/nix
 
 
 %files devel
@@ -143,6 +114,9 @@ done
 
 
 %changelog
+* Thu Aug 13 2020 Jens Petersen <petersen@redhat.com> - 2.3.7-3
+- drop nixbld group and users: only use single-user mode
+
 * Fri Aug  7 2020 Jens Petersen <petersen@redhat.com> - 2.3.7-2
 - upstream renamed nix-builder group to nixbld
 
