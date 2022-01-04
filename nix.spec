@@ -1,13 +1,11 @@
 Name:           nix
-Version:        2.3.7
-Release:        3%{?dist}
+Version:        2.3.16
+Release:        1%{?dist}
 Summary:        Nix software deployment system
 
 License:        LGPLv2+
 URL:            https://nixos.org/nix
 Source0:        https://nixos.org/releases/nix/nix-%{version}/nix-%{version}.tar.xz
-# https://github.com/NixOS/nix/issues/3906
-Patch0:         nix-2.3.7-GC.patch
 BuildRequires:  bzip2-devel
 BuildRequires:  boost-devel
 BuildRequires:  brotli-devel
@@ -114,6 +112,9 @@ chrpath --delete %{buildroot}%{_bindir}/nix %{buildroot}%{_libdir}/libnixexpr.so
 
 
 %changelog
+* Tue Jan  4 2022 Jens Petersen <petersen@redhat.com> - 2.3.16-1
+- update to 2.3.16
+
 * Thu Aug 13 2020 Jens Petersen <petersen@redhat.com> - 2.3.7-3
 - drop nixbld group and users: only use single-user mode
 
