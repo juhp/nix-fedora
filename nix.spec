@@ -1,19 +1,30 @@
 Name:           nix
-Version:        2.3.16
+Version:        2.17.0
 Release:        1%{?dist}
 Summary:        Nix software deployment system
 
 License:        LGPLv2+
-URL:            https://nixos.org/nix
-Source0:        https://nixos.org/releases/nix/nix-%{version}/nix-%{version}.tar.xz
+URL:            https://github.com/NixOS/nix
+Source0:        https://github.com/NixOS/nix/archive/refs/tags/%{version}.tar.gz#/%{name}-%{version}.tar.gz
+BuildRequires:  autoconf-archive
+BuildRequires:  automake
+BuildRequires:  bison
 BuildRequires:  bzip2-devel
 BuildRequires:  boost-devel
 BuildRequires:  brotli-devel
 BuildRequires:  editline-devel
+BuildRequires:  flex
 BuildRequires:  gc-devel
 BuildRequires:  gcc-c++
+#BuildRequires:  gtest-devel
+BuildRequires:  jq
+BuildRequires:  json-devel
+BuildRequires:  libarchive-devel
+BuildRequires:  libcpuid-devel
 BuildRequires:  libcurl-devel
+#BuildRequires:  librapidcheck-devel
 BuildRequires:  libseccomp-devel
+BuildRequires:  libsodium-devel
 BuildRequires:  openssl-devel
 BuildRequires:  sqlite-devel
 BuildRequires:  xz-devel
@@ -53,7 +64,8 @@ The %{name}-doc package contains documentation files for %{name}.
 
 %build
 %undefine _hardened_build
-%configure --localstatedir=/nix/var --docdir=%{_defaultdocdir}/%{name}-doc-%{version}
+./bootstrap.sh
+%configure --localstatedir=/nix/var --docdir=%{_defaultdocdir}/%{name}-doc-%{version} --disable-tests
 make %{?_smp_mflags}
 
 
@@ -112,6 +124,9 @@ chrpath --delete %{buildroot}%{_bindir}/nix %{buildroot}%{_libdir}/libnixexpr.so
 
 
 %changelog
+* Fri Aug  4 2023 Jens Petersen <petersen@redhat.com> - 2.17.0-1
+- update to 2.17.0
+
 * Tue Jan  4 2022 Jens Petersen <petersen@redhat.com> - 2.3.16-1
 - update to 2.3.16
 
