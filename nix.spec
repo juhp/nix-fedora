@@ -1,11 +1,12 @@
 Name:           nix
-Version:        2.17.0
+Version:        2.19.4
 Release:        1%{?dist}
 Summary:        Nix software deployment system
 
 License:        LGPLv2+
 URL:            https://github.com/NixOS/nix
 Source0:        https://github.com/NixOS/nix/archive/refs/tags/%{version}.tar.gz#/%{name}-%{version}.tar.gz
+# https://nixos.org/manual/nix/unstable/installation/prerequisites-source
 BuildRequires:  autoconf-archive
 BuildRequires:  automake
 BuildRequires:  bison
@@ -16,13 +17,11 @@ BuildRequires:  editline-devel
 BuildRequires:  flex
 BuildRequires:  gc-devel
 BuildRequires:  gcc-c++
-#BuildRequires:  gtest-devel
 BuildRequires:  jq
 BuildRequires:  json-devel
 BuildRequires:  libarchive-devel
 BuildRequires:  libcpuid-devel
 BuildRequires:  libcurl-devel
-#BuildRequires:  librapidcheck-devel
 BuildRequires:  libseccomp-devel
 BuildRequires:  libsodium-devel
 BuildRequires:  openssl-devel
@@ -64,8 +63,12 @@ The %{name}-doc package contains documentation files for %{name}.
 
 %build
 %undefine _hardened_build
-./bootstrap.sh
-%configure --localstatedir=/nix/var --docdir=%{_defaultdocdir}/%{name}-doc-%{version} --disable-tests
+autoreconf
+# - unit tests disabled because of rapidcheck
+# 2.20 uses --disable-unit-tests
+# <2.20 uses --disable-tests
+# - docs disabled: needs mdbook
+%configure --localstatedir=/nix/var --docdir=%{_defaultdocdir}/%{name}-doc-%{version} --disable-tests --disable-unit-tests --disable-doc-gen
 make %{?_smp_mflags}
 
 
@@ -96,7 +99,7 @@ rm %{buildroot}%{_sysconfdir}/profile.d/nix-daemon.sh
 # Get rid of Upstart job.
 rm -r %{buildroot}%{_sysconfdir}/init
 
-chrpath --delete %{buildroot}%{_bindir}/nix %{buildroot}%{_libdir}/libnixexpr.so %{buildroot}%{_libdir}/libnixmain.so %{buildroot}%{_libdir}/libnixstore.so
+chrpath --delete %{buildroot}%{_bindir}/nix %{buildroot}%{_libdir}/libnixexpr.so %{buildroot}%{_libdir}/libnixmain.so %{buildroot}%{_libdir}/libnixstore.so %{buildroot}%{_libdir}/libnixfetchers.so %{buildroot}%{_libdir}/libnixcmd.so
 
 
 %files
@@ -104,18 +107,24 @@ chrpath --delete %{buildroot}%{_bindir}/nix %{buildroot}%{_libdir}/libnixexpr.so
 %{_libdir}/*.so
 %{_prefix}/lib/systemd/system/nix-daemon.socket
 %{_prefix}/lib/systemd/system/nix-daemon.service
+%{_prefix}/lib/tmpfiles.d/nix-daemon.conf
 %{_libexecdir}/nix
 %{_datadir}/nix
 %{_mandir}/man1/*.1*
 %{_mandir}/man5/*.5*
 %{_mandir}/man8/*.8*
 %config(noreplace) %{_sysconfdir}/profile.d/nix.sh
+%config(noreplace) %{_sysconfdir}/profile.d/nix.fish
+%config(noreplace) %{_sysconfdir}/profile.d/nix-daemon.fish
 /nix
+%{_datadir}/bash-completion/completions/nix
+%{_datadir}/fish/vendor_completions.d/nix.fish
+%{_datadir}/zsh/site-functions/*
 
 
 %files devel
 %{_includedir}/nix
-%{_prefix}/lib/pkgconfig/*.pc
+%{_libdir}/pkgconfig/*.pc
 
 
 %files doc
@@ -124,6 +133,10 @@ chrpath --delete %{buildroot}%{_bindir}/nix %{buildroot}%{_libdir}/libnixexpr.so
 
 
 %changelog
+* Sun Mar 10 2024 Jens Petersen <petersen@redhat.com> - 2.19.4-1
+- update to 2.19.4
+- https://nixos.org/manual/nix/stable/release-notes/rl-2.19
+
 * Fri Aug  4 2023 Jens Petersen <petersen@redhat.com> - 2.17.0-1
 - update to 2.17.0
 
