@@ -1,3 +1,5 @@
+%bcond docs 0
+
 Name:           nix
 Version:        2.19.4
 Release:        1%{?dist}
@@ -24,6 +26,8 @@ BuildRequires:  libcpuid-devel
 BuildRequires:  libcurl-devel
 BuildRequires:  libseccomp-devel
 BuildRequires:  libsodium-devel
+BuildRequires:  lowdown
+BuildRequires:  lowdown-devel
 BuildRequires:  openssl-devel
 BuildRequires:  sqlite-devel
 BuildRequires:  xz-devel
@@ -49,12 +53,14 @@ The %{name}-devel package contains libraries and header files for
 developing applications that use %{name}.
 
 
+%if %{with docs}
 %package doc
 Summary:        Documentation files for %{name}
 BuildArch:      noarch
 
 %description   doc
 The %{name}-doc package contains documentation files for %{name}.
+%endif
 
 
 %prep
@@ -67,8 +73,8 @@ autoreconf
 # - unit tests disabled because of rapidcheck
 # 2.20 uses --disable-unit-tests
 # <2.20 uses --disable-tests
-# - docs disabled: needs mdbook
-%configure --localstatedir=/nix/var --docdir=%{_defaultdocdir}/%{name}-doc-%{version} --disable-tests --disable-unit-tests --disable-doc-gen
+# - docs disabled: needs mdbook and avoid https://github.com/NixOS/nix/issues/10148
+%configure --localstatedir=/nix/var --docdir=%{_defaultdocdir}/%{name}-doc-%{version} --disable-tests --disable-unit-tests %{!?with_docs:--disable-doc-gen}
 make %{?_smp_mflags}
 
 
@@ -99,6 +105,7 @@ rm %{buildroot}%{_sysconfdir}/profile.d/nix-daemon.sh
 # Get rid of Upstart job.
 rm -r %{buildroot}%{_sysconfdir}/init
 
+# https://github.com/NixOS/nix/issues/10221
 chrpath --delete %{buildroot}%{_bindir}/nix %{buildroot}%{_libdir}/libnixexpr.so %{buildroot}%{_libdir}/libnixmain.so %{buildroot}%{_libdir}/libnixstore.so %{buildroot}%{_libdir}/libnixfetchers.so %{buildroot}%{_libdir}/libnixcmd.so
 
 
@@ -109,10 +116,12 @@ chrpath --delete %{buildroot}%{_bindir}/nix %{buildroot}%{_libdir}/libnixexpr.so
 %{_prefix}/lib/systemd/system/nix-daemon.service
 %{_prefix}/lib/tmpfiles.d/nix-daemon.conf
 %{_libexecdir}/nix
+%if %{with docs}
 %{_datadir}/nix
 %{_mandir}/man1/*.1*
 %{_mandir}/man5/*.5*
 %{_mandir}/man8/*.8*
+%endif
 %config(noreplace) %{_sysconfdir}/profile.d/nix.sh
 %config(noreplace) %{_sysconfdir}/profile.d/nix.fish
 %config(noreplace) %{_sysconfdir}/profile.d/nix-daemon.fish
@@ -127,9 +136,11 @@ chrpath --delete %{buildroot}%{_bindir}/nix %{buildroot}%{_libdir}/libnixexpr.so
 %{_libdir}/pkgconfig/*.pc
 
 
+%if %{with docs}
 %files doc
 %docdir %{_defaultdocdir}/%{name}-doc-%{version}
 %{_defaultdocdir}/%{name}-doc-%{version}
+%endif
 
 
 %changelog
