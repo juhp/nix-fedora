@@ -1,0 +1,5 @@
+To complete single-user setup, run:
+
+sudo chown -R $USER /nix
+nix-channel --add https://nixos.org/channels/nixpkgs-unstable
+nix-channel --update
