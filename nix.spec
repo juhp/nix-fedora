@@ -31,8 +31,10 @@ BuildRequires:  gcc-c++
 BuildRequires:  jq
 BuildRequires:  json-devel
 BuildRequires:  libarchive-devel
+%if %{defined fedora}
 %ifarch x86_64
 BuildRequires:  libcpuid-devel
+%endif
 %endif
 BuildRequires:  libcurl-devel
 BuildRequires:  libseccomp-devel
