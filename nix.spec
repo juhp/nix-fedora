@@ -1,3 +1,6 @@
+%global nixbld_user nixbld-
+%global nixbld_group nixbld
+
 %bcond docs 0
 
 Name:           nix
@@ -5,7 +8,7 @@ Name:           nix
 # https://github.com/NixOS/nix/issues/10147
 # https://bugzilla.redhat.com/show_bug.cgi?id=2124760
 Version:        2.19.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Nix software deployment system
 
 License:        LGPLv2+
@@ -45,6 +48,8 @@ BuildRequires:  openssl-devel
 BuildRequires:  sqlite-devel
 BuildRequires:  xz-devel
 BuildRequires:  chrpath
+Requires:       %{name}-core = %{version}-%{release}
+Requires:       %{name}-daemon = %{version}-%{release}
 Obsoletes:      emacs-%{name} < %{version}-%{release}
 Obsoletes:      emacs-%{name}-el < %{version}-%{release}
 
@@ -57,9 +62,17 @@ other features. It is the basis of the NixOS Linux distribution, but
 it can be used equally well under other Unix systems.
 
 
+%package        core
+Summary:        nix tools
+
+%description    core
+This package provides the nix tools.
+
+
 %package        daemon
 Summary:        nix-daemon needed for multi-user
-Requires:       %{name}%{?_isa} = %{version}-%{release}
+Requires:       %{name}-core%{?_isa} = %{version}-%{release}
+Conflicts:      %{name}-singleuser < %{version}-%{release}
 
 %description    daemon
 This package provides the nix-daemon needed to support multi-user mode.
@@ -83,6 +96,16 @@ BuildArch:      noarch
 %description    doc
 The %{name}-doc package contains documentation files for %{name}.
 %endif
+
+
+%package        singleuser
+Summary:        Single user /nix files
+Requires:       %{name}-core%{?_isa} = %{version}-%{release}
+Conflicts:      %{name}-daemon < %{version}-%{release}
+
+%description    singleuser
+This package provides the nix-daemon needed to support multi-user mode
+and also the nixbld group and users.
 
 
 %prep
@@ -135,7 +158,25 @@ mkdir -p %{buildroot}/etc/nix
 cp %{SOURCE1} %{SOURCE2} %{buildroot}/etc/nix/
 
 
+%pre daemon
+getent group %{nixbld_group} >/dev/null || groupadd -r %{nixbld_group}
+for i in $(seq 10);
+do
+  getent passwd %{nixbld_user}$i >/dev/null || \
+    useradd -r -g %{nixbld_group} -G %{nixbld_group} -d /var/empty \
+      -s %{_sbindir}/nologin \
+      -c "Nix build user $i" %{nixbld_user}$i
+done
+
+
 %files
+%dir /nix
+%dir /nix/var
+%dir /nix/var/log
+%dir /nix/var/log/nix
+
+
+%files core
 %license COPYING
 %doc README.md README.fedora
 %{_bindir}/nix*
@@ -152,7 +193,6 @@ cp %{SOURCE1} %{SOURCE2} %{buildroot}/etc/nix/
 %config(noreplace) %{_sysconfdir}/nix/registry.json
 %config(noreplace) %{_sysconfdir}/profile.d/nix.sh
 %config(noreplace) %{_sysconfdir}/profile.d/nix.fish
-/nix
 %{_datadir}/bash-completion/completions/nix
 %{_datadir}/fish/vendor_completions.d/nix.fish
 %{_datadir}/zsh/site-functions/*
@@ -163,6 +203,12 @@ cp %{SOURCE1} %{SOURCE2} %{buildroot}/etc/nix/
 %{_sysconfdir}/profile.d/nix-daemon.*sh
 %{_prefix}/lib/systemd/system/nix-daemon.*
 %{_prefix}/lib/tmpfiles.d/nix-daemon.conf
+%attr(1775,root,%{nixbld_group}) /nix/store
+%attr(1775,root,%{nixbld_group}) %dir /nix/var/log/nix/drvs
+%dir %attr(775,root,%{nixbld_group}) /nix/var/nix
+%ghost /nix/var/nix/daemon-socket/socket
+%attr(775,root,%{nixbld_group}) /nix/var/nix/temproots
+%attr(775,root,%{nixbld_group}) /nix/var/nix/db
 
 
 %files devel
@@ -177,7 +223,15 @@ cp %{SOURCE1} %{SOURCE2} %{buildroot}/etc/nix/
 %endif
 
 
+%files singleuser
+/nix
+
+
 %changelog
+* Fri Jun 21 2024 Jens Petersen <petersen@redhat.com> - 2.19.4-3
+- add core and singleuser subpackages
+- restore the nixbld group and users in the daemon subpackage
+
 * Mon Jun 17 2024 Jens Petersen <petersen@redhat.com> - 2.19.4-2
 - subpackage nix-daemon
 - add README.fedora for setup
