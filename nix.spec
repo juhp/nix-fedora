@@ -17,7 +17,7 @@ Source0:        https://github.com/NixOS/nix/archive/refs/tags/%{version}.tar.gz
 # https://nixos.org/manual/nix/unstable/installation/prerequisites-source
 Source1:        nix.conf
 Source2:        registry.json
-Source3:        README.fedora
+Source3:        README.md
 Source4:        nix.sysusers
 
 BuildRequires:  autoconf-archive
@@ -109,7 +109,7 @@ If you want multi-user mode install the main nix package instead.
 %prep
 %autosetup -p1
 
-cp -p %{SOURCE3} .
+cp -p %{SOURCE3} README.fedora.md
 
 
 %build
@@ -194,7 +194,7 @@ fi
 
 %files core
 %license COPYING
-%doc README.md README.fedora
+%doc README.md README.fedora.md
 %{_bindir}/nix*
 %exclude %{_bindir}/nix-daemon
 %{_libdir}/*.so
