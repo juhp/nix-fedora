@@ -8,7 +8,7 @@ Name:           nix
 # https://github.com/NixOS/nix/issues/10147
 # https://bugzilla.redhat.com/show_bug.cgi?id=2124760
 Version:        2.19.4
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Nix software deployment system
 
 License:        LGPLv2+
@@ -18,6 +18,7 @@ Source0:        https://github.com/NixOS/nix/archive/refs/tags/%{version}.tar.gz
 Source1:        nix.conf
 Source2:        registry.json
 Source3:        README.fedora
+Source4:        nix.sysusers
 
 BuildRequires:  autoconf-archive
 BuildRequires:  automake
@@ -48,10 +49,13 @@ BuildRequires:  openssl-devel
 BuildRequires:  sqlite-devel
 BuildRequires:  xz-devel
 BuildRequires:  chrpath
+BuildRequires:  systemd-rpm-macros
+%{?sysusers_requires_compat}
 Requires:       %{name}-core = %{version}-%{release}
-Requires:       %{name}-daemon = %{version}-%{release}
 Obsoletes:      emacs-%{name} < %{version}-%{release}
 Obsoletes:      emacs-%{name}-el < %{version}-%{release}
+Obsoletes:      %{name}-daemon < %{version}-%{release}
+Conflicts:      %{name}-singleuser <= %{version}-%{release}
 
 %description
 Nix is a purely functional package manager. It allows multiple
@@ -61,22 +65,15 @@ rollbacks, allows non-root users to install software, and has many
 other features. It is the basis of the NixOS Linux distribution, but
 it can be used equally well under other Unix systems.
 
+The package installs nix in the recommended multiuser mode with a daemon process.
+If you want single-user mode nix, install nix-singleuser instead.
+
 
 %package        core
 Summary:        nix tools
 
 %description    core
 This package provides the nix tools.
-
-
-%package        daemon
-Summary:        nix-daemon needed for multi-user
-Requires:       %{name}-core%{?_isa} = %{version}-%{release}
-Conflicts:      %{name}-singleuser < %{version}-%{release}
-
-%description    daemon
-This package provides the nix-daemon needed to support multi-user mode.
-Though this package basically presume single-user.
 
 
 %package        devel
@@ -99,13 +96,14 @@ The %{name}-doc package contains documentation files for %{name}.
 
 
 %package        singleuser
-Summary:        Single user /nix files
+Summary:        Single user mode nix
 Requires:       %{name}-core%{?_isa} = %{version}-%{release}
-Conflicts:      %{name}-daemon < %{version}-%{release}
+Conflicts:      %{name} <= %{version}-%{release}
 
 %description    singleuser
-This package provides the nix-daemon needed to support multi-user mode
-and also the nixbld group and users.
+This package sets up a single-user mode nix.
+
+If you want multi-user mode install the main nix package instead.
 
 
 %prep
@@ -157,23 +155,41 @@ chrpath --delete %{buildroot}%{_bindir}/nix %{buildroot}%{_libdir}/libnixexpr.so
 mkdir -p %{buildroot}/etc/nix
 cp %{SOURCE1} %{SOURCE2} %{buildroot}/etc/nix/
 
+install -p -D -m 0644 %{SOURCE4} %{buildroot}%{_sysusersdir}/nix.conf
 
-%pre daemon
-getent group %{nixbld_group} >/dev/null || groupadd -r %{nixbld_group}
-for i in $(seq 10);
-do
-  getent passwd %{nixbld_user}$i >/dev/null || \
-    useradd -r -g %{nixbld_group} -G %{nixbld_group} -d /var/empty \
-      -s %{_sbindir}/nologin \
-      -c "Nix build user $i" %{nixbld_user}$i
-done
+
+%pre
+%sysusers_create_compat %{SOURCE4}
+
+
+%post singleuser
+if [ "$1" = 1 ]; then
+mkdir -p /nix/store
+mkdir -p /nix/var/log/nix/drvs
+mkdir -p /nix/var/nix
+mkdir -p /nix/var/nix/temproots
+mkdir -p /nix/var/nix/db
+
+echo 'Run "sudo chown -R $USER /nix/*" to complete single-user setup'
+fi
 
 
 %files
-%dir /nix
+%{_bindir}/nix-daemon
+%{_sysconfdir}/profile.d/nix-daemon.*sh
+%{_prefix}/lib/systemd/system/nix-daemon.*
+%{_prefix}/lib/tmpfiles.d/nix-daemon.conf
+%attr(1775,root,%{nixbld_group}) /nix/store
 %dir /nix/var
 %dir /nix/var/log
 %dir /nix/var/log/nix
+%attr(1775,root,%{nixbld_group}) %dir /nix/var/log/nix/drvs
+%dir %attr(775,root,%{nixbld_group}) /nix/var/nix
+%ghost /nix/var/nix/daemon-socket/socket
+%attr(775,root,%{nixbld_group}) /nix/var/nix/temproots
+%attr(775,root,%{nixbld_group}) /nix/var/nix/db
+%attr(664,root,%{nixbld_group}) /nix/var/nix/gc.lock
+%{_sysusersdir}/nix.conf
 
 
 %files core
@@ -193,22 +209,10 @@ done
 %config(noreplace) %{_sysconfdir}/nix/registry.json
 %config(noreplace) %{_sysconfdir}/profile.d/nix.sh
 %config(noreplace) %{_sysconfdir}/profile.d/nix.fish
+%dir /nix
 %{_datadir}/bash-completion/completions/nix
 %{_datadir}/fish/vendor_completions.d/nix.fish
 %{_datadir}/zsh/site-functions/*
-
-
-%files daemon
-%{_bindir}/nix-daemon
-%{_sysconfdir}/profile.d/nix-daemon.*sh
-%{_prefix}/lib/systemd/system/nix-daemon.*
-%{_prefix}/lib/tmpfiles.d/nix-daemon.conf
-%attr(1775,root,%{nixbld_group}) /nix/store
-%attr(1775,root,%{nixbld_group}) %dir /nix/var/log/nix/drvs
-%dir %attr(775,root,%{nixbld_group}) /nix/var/nix
-%ghost /nix/var/nix/daemon-socket/socket
-%attr(775,root,%{nixbld_group}) /nix/var/nix/temproots
-%attr(775,root,%{nixbld_group}) /nix/var/nix/db
 
 
 %files devel
@@ -224,13 +228,18 @@ done
 
 
 %files singleuser
-/nix
 
 
 %changelog
-* Fri Jun 21 2024 Jens Petersen <petersen@redhat.com> - 2.19.4-3
+* Sun Jun 23 2024 Jens Petersen <petersen@redhat.com> - 2.19.4-4
+- move daemon to base package
+- use sysusers.d to define builder group and users
+- singleusers now sets up its dirs
+
+* Sat Jun 22 2024 Jens Petersen <petersen@redhat.com> - 2.19.4-3
 - add core and singleuser subpackages
-- restore the nixbld group and users in the daemon subpackage
+- merge daemon subpackage into the base package
+- restore the nixbld group and users for multiuser mode: using sysusers.d
 
 * Mon Jun 17 2024 Jens Petersen <petersen@redhat.com> - 2.19.4-2
 - subpackage nix-daemon
