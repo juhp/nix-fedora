@@ -8,7 +8,7 @@ Name:           nix
 # https://github.com/NixOS/nix/issues/10147
 # https://bugzilla.redhat.com/show_bug.cgi?id=2124760
 Version:        2.19.4
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Nix software deployment system
 
 License:        LGPLv2+
@@ -231,6 +231,9 @@ fi
 
 
 %changelog
+* Mon Jun 24 2024 Jens Petersen <petersen@redhat.com> - 2.19.4-5
+- remove the sysusers GECOS field from the nixbld group (@FrostyX)
+
 * Sun Jun 23 2024 Jens Petersen <petersen@redhat.com> - 2.19.4-4
 - move daemon to base package
 - use sysusers.d to define builder group and users

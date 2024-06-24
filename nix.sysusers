@@ -1,5 +1,5 @@
 #Type Name     ID  GECOS                        Home directory  Shell
-g     nixbld   -  "Nix build group"
+g     nixbld   -
 u     nixbld-1 -  "Nix build user 1"            /var/empty      /sbin/nologin
 u     nixbld-2 -  "Nix build user 2"            /var/empty      /sbin/nologin
 u     nixbld-3 -  "Nix build user 3"            /var/empty      /sbin/nologin
