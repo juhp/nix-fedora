@@ -241,8 +241,7 @@ fi
 
 * Sat Jun 22 2024 Jens Petersen <petersen@redhat.com> - 2.19.4-3
 - add core and singleuser subpackages
-- merge daemon subpackage into the base package
-- restore the nixbld group and users for multiuser mode: using sysusers.d
+- restore the nixbld group and users for multiuser mode
 
 * Mon Jun 17 2024 Jens Petersen <petersen@redhat.com> - 2.19.4-2
 - subpackage nix-daemon
