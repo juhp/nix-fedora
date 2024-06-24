@@ -1,22 +1,24 @@
+A nix rpm package for Fedora.
+
+Builds are available from <https://copr.fedorainfracloud.org/coprs/petersen/nix/>.
+
 Nix has two installation modes:
 
 # Multi-user mode
 
 This is recommended by upstream and more seamless.
 
-Just install the `nix` package
-and run:
+Just install the `nix` package and run:
 ```
 $ systemctl start nix-daemon`
 ```
 
 # Single-user mode
 
-Works in containers like toolbox.
+Works in rootless containers like toolbox.
 
 Install the `nix-singleuser` package
-and then to complete single-user setup
-run:
+and then to complete single-user setup run:
 ```
 $ sudo chown -R $USER /nix/*
 ```
