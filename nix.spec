@@ -1,4 +1,3 @@
-%global nixbld_user nixbld-
 %global nixbld_group nixbld
 
 %bcond docs 0
@@ -7,11 +6,12 @@ Name:           nix
 # 2.20+ currently fails to build: needs newer or patched gc
 # https://github.com/NixOS/nix/issues/10147
 # https://bugzilla.redhat.com/show_bug.cgi?id=2124760
+# also https://github.com/NixOS/nix/issues/10952
 Version:        2.19.4
 Release:        5%{?dist}
-Summary:        Nix software deployment system
+Summary:        A purely functional package manager
 
-License:        LGPLv2+
+License:        LGPL-2.1-or-later
 URL:            https://github.com/NixOS/nix
 Source0:        https://github.com/NixOS/nix/archive/refs/tags/%{version}.tar.gz#/%{name}-%{version}.tar.gz
 # https://nixos.org/manual/nix/unstable/installation/prerequisites-source
