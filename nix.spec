@@ -3,35 +3,32 @@
 %bcond docs 0
 
 Name:           nix
-# 2.20+ currently fails to build: needs newer or patched gc
-# https://github.com/NixOS/nix/issues/10147
-# https://bugzilla.redhat.com/show_bug.cgi?id=2124760
-# also https://github.com/NixOS/nix/issues/10952
-Version:        2.19.7
+Version:        2.28.3
 Release:        1%{?dist}
 Summary:        A purely functional package manager
 
 License:        LGPL-2.1-or-later
 URL:            https://github.com/NixOS/nix
 Source0:        https://github.com/NixOS/nix/archive/refs/tags/%{version}.tar.gz#/%{name}-%{version}.tar.gz
-# https://nixos.org/manual/nix/unstable/installation/prerequisites-source
 Source1:        nix.conf
 Source2:        registry.json
 Source3:        README.md
 Source4:        nix.sysusers
+Patch0:         nix-perl-vendorarch.patch
 
-BuildRequires:  autoconf-archive
-BuildRequires:  automake
+# https://nixos.org/manual/nix/unstable/installation/prerequisites-source
 BuildRequires:  bison
+BuildRequires:  blake3-devel
 BuildRequires:  bzip2-devel
 BuildRequires:  boost-devel
 BuildRequires:  brotli-devel
+BuildRequires:  cmake
 BuildRequires:  editline-devel
 BuildRequires:  flex
 BuildRequires:  gc-devel
 BuildRequires:  gcc-c++
-# for newer nix
-#BuildRequires:  libgit2-devel
+BuildRequires:  gmock-devel
+BuildRequires:  libgit2-devel
 BuildRequires:  jq
 BuildRequires:  json-devel
 BuildRequires:  libarchive-devel
@@ -45,11 +42,18 @@ BuildRequires:  libseccomp-devel
 BuildRequires:  libsodium-devel
 BuildRequires:  lowdown
 BuildRequires:  lowdown-devel
+BuildRequires:  meson
 BuildRequires:  openssl-devel
+BuildRequires:  perl-devel
+BuildRequires:  perl-macros
+BuildRequires:  perl-DBD-SQLite
+BuildRequires:  perl-ExtUtils-ParseXS
+BuildRequires:  rapidcheck-devel
 BuildRequires:  sqlite-devel
 BuildRequires:  xz-devel
 BuildRequires:  chrpath
 BuildRequires:  systemd-rpm-macros
+BuildRequires:  toml11-devel
 %{?sysusers_requires_compat}
 Requires:       %{name}-core = %{version}-%{release}
 Obsoletes:      emacs-%{name} < %{version}-%{release}
@@ -113,20 +117,20 @@ cp -p %{SOURCE3} README.fedora.md
 
 
 %build
-%undefine _hardened_build
-autoreconf --install
-# - unit tests disabled because of rapidcheck
-# 2.20 uses --disable-unit-tests
-# <2.20 uses --disable-tests
-# - docs disabled: needs mdbook and avoid https://github.com/NixOS/nix/issues/10148
-%configure --localstatedir=/nix/var --docdir=%{_defaultdocdir}/%{name}-doc-%{version} --disable-tests --disable-unit-tests %{!?with_docs:--disable-doc-gen}
-%make_build
+%meson --sysconf=/etc \
+%ifnarch x86_64
+  -Dlibutil:cpuid=disabled
+%else
+%{nil}
+%endif
+%meson_build
 
 
 %install
-%make_install
+%meson_install
 
-find %{buildroot} -name '*.la' -exec rm -f {} ';'
+mkdir -p %{buildroot}%{_sysconfdir}/profile.d/
+mv %{buildroot}/usr/etc/profile.d/* %{buildroot}%{_sysconfdir}/profile.d/
 
 mkdir -p %{buildroot}/nix/store
 mkdir -p %{buildroot}/nix/var/log/nix/drvs
@@ -140,13 +144,6 @@ for i in db temproots ; do
   mkdir %{buildroot}/nix/var/nix/$i
 done
 touch %{buildroot}/nix/var/nix/gc.lock
-
-# fix permission of nix profile
-# (until this is fixed in the relevant Makefile)
-chmod -x %{buildroot}%{_sysconfdir}/profile.d/nix.sh
-
-# Get rid of Upstart job.
-rm -r %{buildroot}%{_sysconfdir}/init
 
 # https://github.com/NixOS/nix/issues/10221
 chrpath --delete %{buildroot}%{_bindir}/nix %{buildroot}%{_libdir}/libnixexpr.so %{buildroot}%{_libdir}/libnixmain.so %{buildroot}%{_libdir}/libnixstore.so %{buildroot}%{_libdir}/libnixfetchers.so %{buildroot}%{_libdir}/libnixcmd.so
@@ -198,6 +195,8 @@ fi
 %{_bindir}/nix*
 %exclude %{_bindir}/nix-daemon
 %{_libdir}/*.so
+%{perl_vendorarch}/Nix
+%{perl_vendorarch}/auto/Nix
 %{_libexecdir}/nix
 %if %{with docs}
 %{_datadir}/nix
@@ -217,6 +216,7 @@ fi
 
 %files devel
 %{_includedir}/nix
+%{_includedir}/nix_api_*.h
 %{_libdir}/pkgconfig/*.pc
 
 
