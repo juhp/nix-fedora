@@ -7,8 +7,8 @@ Name:           nix
 # https://github.com/NixOS/nix/issues/10147
 # https://bugzilla.redhat.com/show_bug.cgi?id=2124760
 # also https://github.com/NixOS/nix/issues/10952
-Version:        2.19.4
-Release:        6%{?dist}
+Version:        2.19.7
+Release:        1%{?dist}
 Summary:        A purely functional package manager
 
 License:        LGPL-2.1-or-later
@@ -231,6 +231,9 @@ fi
 
 
 %changelog
+* Sat May 03 2025 Jens Petersen <petersen@redhat.com> - 2.19.7-1
+- update to 2.19.7
+
 * Mon Jun 24 2024 Jens Petersen <petersen@redhat.com> - 2.19.4-5
 - remove the sysusers GECOS field from the nixbld group (@FrostyX)
 
