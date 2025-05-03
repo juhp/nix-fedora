@@ -8,7 +8,7 @@ Name:           nix
 # https://bugzilla.redhat.com/show_bug.cgi?id=2124760
 # also https://github.com/NixOS/nix/issues/10952
 Version:        2.19.4
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        A purely functional package manager
 
 License:        LGPL-2.1-or-later
