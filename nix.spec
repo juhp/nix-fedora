@@ -4,7 +4,7 @@
 
 Name:           nix
 Version:        2.28.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A purely functional package manager
 
 License:        LGPL-2.1-or-later
@@ -231,6 +231,9 @@ fi
 
 
 %changelog
+* Sun May 04 2025 Jens Petersen <petersen@redhat.com> - 2.28.3-2
+- nix.conf: remove repl-flake as experimental feature
+
 * Sat May 03 2025 Jens Petersen <petersen@redhat.com> - 2.19.7-1
 - update to 2.19.7
 
