@@ -10,7 +10,7 @@ This is recommended by upstream and more seamless.
 
 Just install the `nix` package and run:
 ```
-$ systemctl start nix-daemon`
+$ sudo systemctl enable --now nix-daemon
 ```
 
 # Single-user mode
