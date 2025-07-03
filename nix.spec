@@ -3,8 +3,8 @@
 %bcond docs 0
 
 Name:           nix
-Version:        2.28.3
-Release:        2%{?dist}
+Version:        2.29.1
+Release:        1%{?dist}
 Summary:        A purely functional package manager
 
 License:        LGPL-2.1-or-later
@@ -117,7 +117,7 @@ cp -p %{SOURCE3} README.fedora.md
 
 
 %build
-%meson --sysconf=/etc \
+%meson --sysconf=/etc --localstatedir=/nix/var \
 %ifnarch x86_64
   -Dlibutil:cpuid=disabled
 %else
@@ -183,6 +183,7 @@ fi
 %attr(1775,root,%{nixbld_group}) %dir /nix/var/log/nix/drvs
 %dir %attr(775,root,%{nixbld_group}) /nix/var/nix
 %ghost /nix/var/nix/daemon-socket/socket
+%attr(775,root,%{nixbld_group}) /nix/var/nix/profiles
 %attr(775,root,%{nixbld_group}) /nix/var/nix/temproots
 %attr(775,root,%{nixbld_group}) /nix/var/nix/db
 %attr(664,root,%{nixbld_group}) /nix/var/nix/gc.lock
@@ -217,6 +218,7 @@ fi
 %files devel
 %{_includedir}/nix
 %{_includedir}/nix_api_*.h
+%{_includedir}/nix_api_*.hh
 %{_libdir}/pkgconfig/*.pc
 
 
@@ -231,7 +233,11 @@ fi
 
 
 %changelog
+* Thu Jul 03 2025 Jens Petersen <petersen@redhat.com> - 2.29.1-1
+- update to 2.29.1
+
 * Sun May 04 2025 Jens Petersen <petersen@redhat.com> - 2.28.3-2
+- https://nix.dev/manual/nix/2.28/release-notes/rl-2.28
 - nix.conf: remove repl-flake as experimental feature
 
 * Sat May 03 2025 Jens Petersen <petersen@redhat.com> - 2.19.7-1
