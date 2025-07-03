@@ -5,7 +5,7 @@
 
 Name:           nix
 Version:        2.29.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        A purely functional package manager
 
 License:        LGPL-2.1-or-later
@@ -61,6 +61,7 @@ BuildRequires:  systemd-rpm-macros
 BuildRequires:  toml11-devel
 %{?sysusers_requires_compat}
 Requires:       %{name}-core = %{version}-%{release}
+Requires:       %{name}-filesystem = %{version}-%{release}
 Obsoletes:      emacs-%{name} < %{version}-%{release}
 Obsoletes:      emacs-%{name}-el < %{version}-%{release}
 Obsoletes:      %{name}-daemon < %{version}-%{release}
@@ -84,6 +85,8 @@ Summary:        nix tools
 %description    core
 This package provides the nix tools.
 
+Most users should probably install either nix or nix-singleuser.
+
 
 %package        devel
 Summary:        Development files for %{name}
@@ -104,9 +107,20 @@ The %{name}-doc package contains documentation files for %{name}.
 %endif
 
 
+%package        filesystem
+Summary:        Filesystem files for %{name}
+BuildArch:      noarch
+
+%description    filesystem
+The package provides the /nix file structure by the nix package manager.
+
+This allows the possibility to install nix-core with /nix.
+
+
 %package        singleuser
 Summary:        Single user mode nix
 Requires:       %{name}-core%{?_isa} = %{version}-%{release}
+Requires:       %{name}-filesystem = %{version}-%{release}
 Conflicts:      %{name} <= %{version}-%{release}
 
 %description    singleuser
@@ -185,9 +199,6 @@ fi
 %{_prefix}/lib/systemd/system/nix-daemon.*
 %{_prefix}/lib/tmpfiles.d/nix-daemon.conf
 %attr(1775,root,%{nixbld_group}) /nix/store
-%dir /nix/var
-%dir /nix/var/log
-%dir /nix/var/log/nix
 %attr(1775,root,%{nixbld_group}) %dir /nix/var/log/nix/drvs
 %dir %attr(775,root,%{nixbld_group}) /nix/var/nix
 %ghost /nix/var/nix/daemon-socket/socket
@@ -217,7 +228,6 @@ fi
 %config(noreplace) %{_sysconfdir}/nix/registry.json
 %config(noreplace) %{_sysconfdir}/profile.d/nix.sh
 %config(noreplace) %{_sysconfdir}/profile.d/nix.fish
-%dir /nix
 %{_datadir}/bash-completion/completions/nix
 %{_datadir}/fish/vendor_completions.d/nix.fish
 %{_datadir}/zsh/site-functions/*
@@ -228,6 +238,13 @@ fi
 %{_includedir}/nix_api_*.h
 %{_includedir}/nix_api_*.hh
 %{_libdir}/pkgconfig/*.pc
+
+
+%files filesystem
+%dir /nix
+%dir /nix/var
+%dir /nix/var/log
+%dir /nix/var/log/nix
 
 
 %if %{with docs}
@@ -241,6 +258,9 @@ fi
 
 
 %changelog
+* Thu Jul 03 2025 Jens Petersen <petersen@redhat.com> - 2.29.1-3
+- add a filesystem subpackage (#3)
+
 * Thu Jul 03 2025 Jens Petersen <petersen@redhat.com> - 2.29.1-2
 - disable unit-tests
 
