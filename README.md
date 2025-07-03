@@ -26,5 +26,5 @@ $ sudo chown -R $USER /nix/*
 # Testing
 
 A simple way to check nix is working is to run `nix-shell -p hello`.
-This should after a short while of downloading
-put you in a nix shell subprocess where you should be able to run `hello`.
+After a short while of downloading, this should put you in
+a nix shell subprocess where you should be able to run `hello`.
