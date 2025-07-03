@@ -5,7 +5,7 @@
 
 Name:           nix
 Version:        2.29.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        A purely functional package manager
 
 License:        LGPL-2.1-or-later
@@ -61,10 +61,10 @@ BuildRequires:  systemd-rpm-macros
 BuildRequires:  toml11-devel
 %{?sysusers_requires_compat}
 Requires:       %{name}-core = %{version}-%{release}
+Requires:       %{name}-daemon = %{version}-%{release}
 Requires:       %{name}-filesystem = %{version}-%{release}
 Obsoletes:      emacs-%{name} < %{version}-%{release}
 Obsoletes:      emacs-%{name}-el < %{version}-%{release}
-Obsoletes:      %{name}-daemon < %{version}-%{release}
 Conflicts:      %{name}-singleuser <= %{version}-%{release}
 
 %description
@@ -95,6 +95,13 @@ Requires:       %{name}%{?_isa} = %{version}-%{release}
 %description    devel
 The %{name}-devel package contains libraries and header files for
 developing applications that use %{name}.
+
+
+%package        daemon
+Summary:        The nix daemon
+
+%description    daemon
+This package provides nix-daemon and associated files.
 
 
 %if %{with docs}
@@ -194,10 +201,6 @@ fi
 
 
 %files
-%{_bindir}/nix-daemon
-%{_sysconfdir}/profile.d/nix-daemon.*sh
-%{_prefix}/lib/systemd/system/nix-daemon.*
-%{_prefix}/lib/tmpfiles.d/nix-daemon.conf
 %attr(1775,root,%{nixbld_group}) /nix/store
 %attr(1775,root,%{nixbld_group}) %dir /nix/var/log/nix/drvs
 %dir %attr(775,root,%{nixbld_group}) /nix/var/nix
@@ -233,6 +236,13 @@ fi
 %{_datadir}/zsh/site-functions/*
 
 
+%files daemon
+%{_bindir}/nix-daemon
+%{_sysconfdir}/profile.d/nix-daemon.*sh
+%{_prefix}/lib/systemd/system/nix-daemon.*
+%{_prefix}/lib/tmpfiles.d/nix-daemon.conf
+
+
 %files devel
 %{_includedir}/nix
 %{_includedir}/nix_api_*.h
@@ -258,6 +268,9 @@ fi
 
 
 %changelog
+* Thu Jul 03 2025 Jens Petersen <petersen@redhat.com> - 2.29.1-4
+- move nix-daemon to its own subpackage
+
 * Thu Jul 03 2025 Jens Petersen <petersen@redhat.com> - 2.29.1-3
 - add a filesystem subpackage (#3)
 
