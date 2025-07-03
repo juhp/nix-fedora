@@ -1,10 +1,11 @@
 %global nixbld_group nixbld
 
 %bcond docs 0
+%bcond tests 0
 
 Name:           nix
 Version:        2.29.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A purely functional package manager
 
 License:        LGPL-2.1-or-later
@@ -27,7 +28,9 @@ BuildRequires:  editline-devel
 BuildRequires:  flex
 BuildRequires:  gc-devel
 BuildRequires:  gcc-c++
+%if %{with tests}
 BuildRequires:  gmock-devel
+%endif
 BuildRequires:  libgit2-devel
 BuildRequires:  jq
 BuildRequires:  json-devel
@@ -48,7 +51,9 @@ BuildRequires:  perl-devel
 BuildRequires:  perl-macros
 BuildRequires:  perl-DBD-SQLite
 BuildRequires:  perl-ExtUtils-ParseXS
+%if %{with tests}
 BuildRequires:  rapidcheck-devel
+%endif
 BuildRequires:  sqlite-devel
 BuildRequires:  xz-devel
 BuildRequires:  chrpath
@@ -118,6 +123,9 @@ cp -p %{SOURCE3} README.fedora.md
 
 %build
 %meson --sysconf=/etc --localstatedir=/nix/var \
+%if %{without tests}
+       -Dunit-tests=false \
+%endif
 %ifnarch x86_64
   -Dlibutil:cpuid=disabled
 %else
@@ -233,6 +241,9 @@ fi
 
 
 %changelog
+* Thu Jul 03 2025 Jens Petersen <petersen@redhat.com> - 2.29.1-2
+- disable unit-tests
+
 * Thu Jul 03 2025 Jens Petersen <petersen@redhat.com> - 2.29.1-1
 - update to 2.29.1
 
