@@ -158,6 +158,7 @@ cp -p %{SOURCE3} README.fedora.md
 MESON_OPTS=(
     --sysconf=%{_sysconfdir}
     --localstatedir=/nix/var
+    -Dnix:profile-dir=%{_sysconfdir}/profile.d
     )
 %if %{without tests}
 MESON_OPTS+=(-Dunit-tests=false)
@@ -172,9 +173,6 @@ MESON_OPTS+=(-Dlibutil:cpuid=disabled)
 
 %install
 %meson_install
-
-mkdir -p %{buildroot}%{_sysconfdir}/profile.d/
-mv %{buildroot}/usr/etc/profile.d/* %{buildroot}%{_sysconfdir}/profile.d/
 
 mkdir -p %{buildroot}/nix/store
 mkdir -p %{buildroot}/nix/var/log/nix/drvs
