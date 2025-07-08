@@ -25,6 +25,7 @@ BuildRequires:  blake3-devel
 BuildRequires:  bzip2-devel
 BuildRequires:  boost-devel
 BuildRequires:  brotli-devel
+BuildRequires:  busybox
 BuildRequires:  cmake
 BuildRequires:  editline-devel
 BuildRequires:  flex
@@ -83,6 +84,7 @@ If you want single-user mode nix, install nix-singleuser instead.
 
 %package        core
 Summary:        nix tools
+Recommends:     busybox
 
 %description    core
 This package provides the nix tools.
@@ -158,6 +160,7 @@ cp -p %{SOURCE3} README.fedora.md
 MESON_OPTS=(
     --sysconf=%{_sysconfdir}
     --localstatedir=/nix/var
+    -Dlibstore:sandbox-shell=%{_bindir}/busybox
     -Dnix:profile-dir=%{_sysconfdir}/profile.d
     )
 %if %{without tests}
