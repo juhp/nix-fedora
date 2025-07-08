@@ -1,6 +1,7 @@
 %global nixbld_group nixbld
 
 %bcond docs 0
+# test failures complain NIX_STORE undefined
 %bcond tests 0
 
 Name:           nix
@@ -137,6 +138,16 @@ This package sets up a single-user mode nix.
 If you want multi-user mode install the main nix package instead.
 
 
+%if %{with tests}
+%package        test
+Summary:        Nix test programs
+Requires:       %{name}-core%{?_isa} = %{version}-%{release}
+
+%description    test
+This package provides the nix-test programs.
+%endif
+
+
 %prep
 %autosetup -p1
 
@@ -185,6 +196,13 @@ cp %{SOURCE1} %{SOURCE2} %{buildroot}/etc/nix/
 install -p -D -m 0644 %{SOURCE4} %{buildroot}%{_sysusersdir}/nix.conf
 
 
+%if %{with tests}
+%check
+#export TEST_ROOT=/var/home/petersen/tmp/nix-test
+%meson_test
+%endif
+
+
 %pre
 %sysusers_create_compat %{SOURCE4}
 
@@ -217,6 +235,9 @@ fi
 %license COPYING
 %doc README.md README.fedora.md
 %{_bindir}/nix*
+%if %{with tests}
+%exclude %{_bindir}/nix*-test
+%endif
 %exclude %{_bindir}/nix-daemon
 %{_libdir}/*.so
 %{perl_vendorarch}/Nix
@@ -266,6 +287,12 @@ fi
 
 
 %files singleuser
+
+
+%if %{with tests}
+%files test
+%{_bindir}/nix*-test
+%endif
 
 
 %changelog
