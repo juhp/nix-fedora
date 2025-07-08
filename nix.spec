@@ -203,8 +203,10 @@ install -p -D -m 0644 %{SOURCE4} %{buildroot}%{_sysusersdir}/nix.conf
 %endif
 
 
+%if 0%{?fedora} < 42 || %{defined el9} || %{defined el10}
 %pre
 %sysusers_create_compat %{SOURCE4}
+%endif
 
 
 %post singleuser
