@@ -193,7 +193,9 @@ chrpath --delete %{buildroot}%{_bindir}/nix %{buildroot}%{_libdir}/libnixexpr.so
 mkdir -p %{buildroot}/etc/nix
 cp %{SOURCE1} %{SOURCE2} %{buildroot}/etc/nix/
 
-install -p -D -m 0644 %{SOURCE4} %{buildroot}%{_sysusersdir}/nix.conf
+install -p -D -m 0644 %{SOURCE4} %{buildroot}%{_sysusersdir}/nix-daemon.conf
+
+
 
 
 %if %{with tests}
@@ -230,7 +232,7 @@ fi
 %attr(775,root,%{nixbld_group}) /nix/var/nix/temproots
 %attr(775,root,%{nixbld_group}) /nix/var/nix/db
 %attr(664,root,%{nixbld_group}) /nix/var/nix/gc.lock
-%{_sysusersdir}/nix.conf
+%{_sysusersdir}/nix-daemon.conf
 
 
 %files core
