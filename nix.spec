@@ -6,7 +6,7 @@
 
 Name:           nix
 Version:        2.29.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        A purely functional package manager
 
 License:        LGPL-2.1-or-later
@@ -155,15 +155,18 @@ cp -p %{SOURCE3} README.fedora.md
 
 
 %build
-%meson --sysconf=/etc --localstatedir=/nix/var \
+MESON_OPTS=(
+    --sysconf=%{_sysconfdir}
+    --localstatedir=/nix/var
+    )
 %if %{without tests}
-       -Dunit-tests=false \
+MESON_OPTS+=(-Dunit-tests=false)
 %endif
 %ifnarch x86_64
-  -Dlibutil:cpuid=disabled
-%else
-%{nil}
+MESON_OPTS+=(-Dlibutil:cpuid=disabled)
 %endif
+
+%meson "${MESON_OPTS[@]}"
 %meson_build
 
 
