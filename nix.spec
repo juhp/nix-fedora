@@ -19,7 +19,8 @@ Source4:        nix.sysusers
 Patch0:         nix-perl-vendorarch.patch
 
 # https://nixos.org/manual/nix/unstable/installation/prerequisites-source
-BuildRequires:  aws-c-auth aws-c-common aws-c-s3
+# missing aws-cpp-sdk-s3
+#BuildRequires:  aws-c-auth aws-c-common aws-c-s3
 BuildRequires:  bison
 BuildRequires:  blake3-devel
 BuildRequires:  bzip2-devel
