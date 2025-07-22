@@ -6,7 +6,7 @@
 
 Name:           nix
 Version:        2.29.1
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        A purely functional package manager
 
 License:        LGPL-2.1-or-later
