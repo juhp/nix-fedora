@@ -5,8 +5,8 @@
 %bcond tests 0
 
 Name:           nix
-Version:        2.29.1
-Release:        6%{?dist}
+Version:        2.30.1
+Release:        1%{?dist}
 Summary:        A purely functional package manager
 
 License:        LGPL-2.1-or-later
@@ -167,7 +167,12 @@ MESON_OPTS=(
 %if %{without tests}
 MESON_OPTS+=(-Dunit-tests=false)
 %endif
-%ifnarch x86_64
+%ifarch x86_64
+# missing from epel10: https://bugzilla.redhat.com/show_bug.cgi?id=2368495
+%if %{undefined fedora}
+MESON_OPTS+=(-Dlibutil:cpuid=disabled)
+%endif
+%else
 MESON_OPTS+=(-Dlibutil:cpuid=disabled)
 %endif
 
@@ -305,6 +310,9 @@ fi
 
 
 %changelog
+* Tue Jul 22 2025 Jens Petersen <petersen@redhat.com> - 2.30.1-1
+- update to 2.30.1
+
 * Thu Jul 03 2025 Jens Petersen <petersen@redhat.com> - 2.29.1-4
 - move nix-daemon to its own subpackage
 
