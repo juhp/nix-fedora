@@ -5,7 +5,7 @@
 %bcond tests 0
 
 Name:           nix
-Version:        2.30.1
+Version:        2.30.2
 Release:        1%{?dist}
 Summary:        A purely functional package manager
 
@@ -93,6 +93,13 @@ This package provides the nix tools.
 Most users should probably install either nix or nix-singleuser.
 
 
+%package        daemon
+Summary:        The nix daemon
+
+%description    daemon
+This package provides nix-daemon and associated files.
+
+
 %package        devel
 Summary:        Development files for %{name}
 Requires:       %{name}%{?_isa} = %{version}-%{release}
@@ -100,13 +107,6 @@ Requires:       %{name}%{?_isa} = %{version}-%{release}
 %description    devel
 The %{name}-devel package contains libraries and header files for
 developing applications that use %{name}.
-
-
-%package        daemon
-Summary:        The nix daemon
-
-%description    daemon
-This package provides nix-daemon and associated files.
 
 
 %if %{with docs}
@@ -310,8 +310,12 @@ fi
 
 
 %changelog
+* Fri Aug 15 2025 Jens Petersen <petersen@redhat.com> - 2.30.2-1
+- update to 2.30.2
+
 * Tue Jul 22 2025 Jens Petersen <petersen@redhat.com> - 2.30.1-1
 - update to 2.30.1
+- https://releases.nixos.org/nix/nix-2.30.2/manual/release-notes/rl-2.30.html
 
 * Thu Jul 03 2025 Jens Petersen <petersen@redhat.com> - 2.29.1-4
 - move nix-daemon to its own subpackage
