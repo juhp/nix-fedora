@@ -26,7 +26,9 @@ BuildRequires:  blake3-devel
 BuildRequires:  bzip2-devel
 BuildRequires:  boost-devel
 BuildRequires:  brotli-devel
+%ifarch x86_64 aarch64 ppc64le
 BuildRequires:  busybox
+%endif
 BuildRequires:  cmake
 %if %{with docs}
 BuildRequires:  doxygen
@@ -90,6 +92,7 @@ See the README.fedora.md file for setup instructions.
 %package daemon
 Summary:        The nix daemon
 Requires:       nix-core = %{version}-%{release}
+BuildArch:      noarch
 
 %description daemon
 This package provides nix-daemon and associated files.
