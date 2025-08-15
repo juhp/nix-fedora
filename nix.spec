@@ -6,7 +6,7 @@
 
 Name:           nix
 Version:        2.30.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A purely functional package manager
 
 License:        LGPL-2.1-or-later
@@ -91,8 +91,8 @@ See the README.fedora.md file for setup instructions.
 
 %package daemon
 Summary:        The nix daemon
-Requires:       nix-core = %{version}-%{release}
 BuildArch:      noarch
+Requires:       %{name}-core%{?_isa} = %{version}-%{release}
 
 %description daemon
 This package provides nix-daemon and associated files.
@@ -100,7 +100,7 @@ This package provides nix-daemon and associated files.
 
 %package devel
 Summary:        Development files for %{name}
-Requires:       %{name}%{?_isa} = %{version}-%{release}
+Requires:       %{name}-core%{?_isa} = %{version}-%{release}
 
 %description devel
 The %{name}-devel package contains libraries and header files for
@@ -225,5 +225,8 @@ cp %{SOURCE1} %{SOURCE2} %{buildroot}/etc/nix/
 
 
 %changelog
+* Fri Aug 15 2025 Jens Petersen <petersen@redhat.com> - 2.30.2-2
+- fix nix-devel requires
+
 * Fri Aug 15 2025 Jens Petersen <petersen@redhat.com> - 2.30.2-1
 - initial packaging of nix programs without /nix
