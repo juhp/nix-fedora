@@ -1,6 +1,7 @@
+# needs mdbook
 %bcond docs 0
 # test failures complain NIX_STORE undefined
-# missing rapidcheck
+# and missing rapidcheck
 %bcond tests 0
 
 Name:           nix
@@ -14,6 +15,7 @@ Source0:        https://github.com/NixOS/nix/archive/v%{version}/%{name}-%{versi
 Source1:        nix.conf
 Source2:        registry.json
 Source3:        README.md
+# needed for distros
 Patch0:         nix-perl-vendorarch.patch
 
 # https://nixos.org/manual/nix/unstable/installation/prerequisites-source
@@ -26,6 +28,9 @@ BuildRequires:  boost-devel
 BuildRequires:  brotli-devel
 BuildRequires:  busybox
 BuildRequires:  cmake
+%if %{with docs}
+BuildRequires:  doxygen
+%endif
 BuildRequires:  editline-devel
 BuildRequires:  flex
 BuildRequires:  gc-devel
@@ -132,6 +137,9 @@ MESON_OPTS=(
     -Dlibstore:sandbox-shell=%{_bindir}/busybox
     -Dnix:profile-dir=%{_sysconfdir}/profile.d
     )
+%if %{with docs}
+MESON_OPTS+=(-Ddoc-gen=true)
+%endif
 %if %{without tests}
 MESON_OPTS+=(-Dunit-tests=false)
 %endif
@@ -178,12 +186,6 @@ cp %{SOURCE1} %{SOURCE2} %{buildroot}/etc/nix/
 %{perl_vendorarch}/Nix
 %{perl_vendorarch}/auto/Nix
 %{_libexecdir}/nix
-%if %{with docs}
-%{_datadir}/nix
-%{_mandir}/man1/*.1*
-%{_mandir}/man5/*.5*
-%{_mandir}/man8/*.8*
-%endif
 %config(noreplace) %{_sysconfdir}/nix/nix.conf
 %config(noreplace) %{_sysconfdir}/nix/registry.json
 %config(noreplace) %{_sysconfdir}/profile.d/nix.sh
@@ -209,8 +211,7 @@ cp %{SOURCE1} %{SOURCE2} %{buildroot}/etc/nix/
 
 %if %{with docs}
 %files doc
-%docdir %{_defaultdocdir}/%{name}-doc-%{version}
-%{_defaultdocdir}/%{name}-doc-%{version}
+%{_defaultdocdir}/%{name}
 %endif
 
 
