@@ -29,6 +29,7 @@ BuildRequires:  brotli-devel
 %ifarch x86_64 aarch64 ppc64le
 BuildRequires:  busybox
 %endif
+BuildRequires:  chrpath
 BuildRequires:  cmake
 %if %{with docs}
 BuildRequires:  doxygen
@@ -64,9 +65,9 @@ BuildRequires:  perl-ExtUtils-ParseXS
 #BuildRequires:  rapidcheck-devel
 %endif
 BuildRequires:  sqlite-devel
-BuildRequires:  xz-devel
-BuildRequires:  chrpath
+BuildRequires:  systemd-rpm-macros
 BuildRequires:  toml11-devel
+BuildRequires:  xz-devel
 
 %description
 Nix is a purely functional package manager. It allows multiple
@@ -177,6 +178,18 @@ cp %{SOURCE1} %{SOURCE2} %{buildroot}/etc/nix/
 %endif
 
 
+%post daemon
+%systemd_post nix-daemon.service
+
+
+%preun daemon
+%systemd_preun nix-daemon.service
+
+
+%postun daemon
+%systemd_postun_with_restart nix-daemon.service
+
+
 %files core
 %license COPYING
 %doc README.md README.fedora.md
@@ -225,8 +238,9 @@ cp %{SOURCE1} %{SOURCE2} %{buildroot}/etc/nix/
 
 
 %changelog
-* Fri Aug 15 2025 Jens Petersen <petersen@redhat.com> - 2.30.2-2
+* Sat Aug 16 2025 Jens Petersen <petersen@redhat.com> - 2.30.2-2
 - fix nix-devel requires
+- add systemd scriptlets for nix-daemon
 
 * Fri Aug 15 2025 Jens Petersen <petersen@redhat.com> - 2.30.2-1
 - initial packaging of nix programs without /nix
