@@ -1,11 +1,16 @@
---- nix-2.28.3/src/perl/meson.build~	2025-04-28 15:48:32.000000000 +0800
-+++ nix-2.28.3/src/perl/meson.build	2025-05-03 20:13:42.365003661 +0800
-@@ -94,8 +94,8 @@
-   perl, '-e', 'use Config; print $Config{archlibexp};', check: true).stdout()
- perl_site_libdir = run_command(
-   perl, '-e', 'use Config; print $Config{installsitearch};', check: true).stdout()
+--- nix-2.31.1/src/perl/meson.build~	2025-09-01 15:52:24.000000000 +0800
++++ nix-2.31.1/src/perl/meson.build	2025-09-10 19:53:22.345061339 +0800
+@@ -110,13 +110,8 @@
+   'use Config; print $Config{installsitearch};',
+   check : true,
+ ).stdout()
 -nix_perl_install_dir = join_paths(
--  libdir, 'perl5', 'site_perl', perl_version, perl_archname)
+-  libdir,
+-  'perl5',
+-  'site_perl',
+-  perl_version,
+-  perl_archname,
+-)
 +nix_perl_install_dir = run_command(
 +  perl, '-e', 'use Config; print $Config{vendorarch};', check: true).stdout()
  

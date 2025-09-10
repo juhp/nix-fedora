@@ -5,8 +5,8 @@
 %bcond tests 0
 
 Name:           nix
-Version:        2.30.2
-Release:        2%{?dist}
+Version:        2.31.1
+Release:        1%{?dist}
 Summary:        A purely functional package manager
 
 License:        LGPL-2.1-or-later
@@ -25,6 +25,7 @@ BuildRequires:  bison
 BuildRequires:  blake3-devel
 BuildRequires:  bzip2-devel
 BuildRequires:  boost-devel
+BuildRequires:  boost-url
 BuildRequires:  brotli-devel
 %ifarch x86_64 aarch64 ppc64le
 BuildRequires:  busybox
@@ -163,9 +164,6 @@ MESON_OPTS+=(-Dlibutil:cpuid=disabled)
 %install
 %meson_install
 
-# https://github.com/NixOS/nix/issues/10221
-chrpath --delete %{buildroot}%{_bindir}/nix %{buildroot}%{_libdir}/libnixexpr.so %{buildroot}%{_libdir}/libnixmain.so %{buildroot}%{_libdir}/libnixstore.so %{buildroot}%{_libdir}/libnixfetchers.so %{buildroot}%{_libdir}/libnixcmd.so
-
 # nix config
 mkdir -p %{buildroot}/etc/nix
 cp %{SOURCE1} %{SOURCE2} %{buildroot}/etc/nix/
@@ -238,6 +236,9 @@ cp %{SOURCE1} %{SOURCE2} %{buildroot}/etc/nix/
 
 
 %changelog
+* Wed Sep 10 2025 Jens Petersen <petersen@redhat.com> - 2.31.1-1
+- https://github.com/NixOS/nix/blob/2.31.1/doc/manual/source/release-notes/rl-2.31.md
+
 * Sat Aug 16 2025 Jens Petersen <petersen@redhat.com> - 2.30.2-2
 - fix nix-devel requires
 - add systemd scriptlets for nix-daemon
