@@ -11,7 +11,7 @@ Summary:        A purely functional package manager
 
 License:        LGPL-2.1-or-later
 URL:            https://github.com/NixOS/nix
-Source0:        https://github.com/NixOS/nix/archive/v%{version}/%{name}-%{version}.tar.gz
+Source0:        https://github.com/NixOS/nix/archive/%{version}/%{name}-%{version}.tar.gz
 Source1:        nix.conf
 Source2:        registry.json
 Source3:        README.md
