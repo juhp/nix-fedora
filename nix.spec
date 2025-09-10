@@ -114,26 +114,23 @@ cp -p %{SOURCE3} README.fedora.md
 MESON_OPTS=(
     --sysconf=%{_sysconfdir}
     --localstatedir=/nix/var
+    --libexecdir=%{_libexecdir}
     -Dbindings=false
     -Ddefault_library=static
+    -Ddoc-gen=%[%{with docs}?"true":"false"]
     -Dlibcmd:readline-flavor=readline
     -Dlibstore:sandbox-shell=%{_bindir}/busybox
     -Dnix:profile-dir=%{_sysconfdir}/profile.d
-    )
-%if %{with docs}
-MESON_OPTS+=(-Ddoc-gen=true)
-%endif
-%if %{without tests}
-MESON_OPTS+=(-Dunit-tests=false)
-%endif
+    -Dunit-tests=%[%{with tests}?"true":"false"]
 %ifarch x86_64
 # missing from epel10: https://bugzilla.redhat.com/show_bug.cgi?id=2368495
 %if %{undefined fedora}
-MESON_OPTS+=(-Dlibutil:cpuid=disabled)
+    -Dlibutil:cpuid=disabled
 %endif
 %else
-MESON_OPTS+=(-Dlibutil:cpuid=disabled)
+    -Dlibutil:cpuid=disabled
 %endif
+    )
 
 %meson "${MESON_OPTS[@]}"
 %meson_build
@@ -210,6 +207,7 @@ rm -r %{buildroot}%{_includedir}/nix* %{buildroot}%{_libdir}/libnix*.a %{buildro
 - https://github.com/NixOS/nix/blob/2.31.1/doc/manual/source/release-notes/rl-2.31.md
 - rename nix-core to base package
 - use readline (#2388768)
+- improve MESON_OPTS setup (zbyszek, #2388768)
 - use static libs and drop devel package
 - disable perl binding
 
