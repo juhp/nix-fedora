@@ -94,15 +94,6 @@ Requires:       %{name}-core%{?_isa} = %{version}-%{release}
 This package provides nix-daemon and associated files.
 
 
-%package devel
-Summary:        Development files for %{name}
-Requires:       %{name}-core%{?_isa} = %{version}-%{release}
-
-%description devel
-The %{name}-devel package contains libraries and header files for
-developing applications that use %{name}.
-
-
 %if %{with docs}
 %package doc
 Summary:        Documentation files for %{name}
@@ -134,6 +125,7 @@ MESON_OPTS=(
     --sysconf=%{_sysconfdir}
     --localstatedir=/nix/var
     -Dbindings=false
+    -Ddefault_library=static
     -Dlibcmd:readline-flavor=readline
     -Dlibstore:sandbox-shell=%{_bindir}/busybox
     -Dnix:profile-dir=%{_sysconfdir}/profile.d
@@ -164,6 +156,8 @@ MESON_OPTS+=(-Dlibutil:cpuid=disabled)
 mkdir -p %{buildroot}/etc/nix
 cp %{SOURCE1} %{SOURCE2} %{buildroot}/etc/nix/
 
+rm -r %{buildroot}%{_includedir}/nix* %{buildroot}%{_libdir}/libnix*.a %{buildroot}%{_libdir}/pkgconfig/*.pc
+
 
 %if %{with tests}
 %check
@@ -192,7 +186,6 @@ cp %{SOURCE1} %{SOURCE2} %{buildroot}/etc/nix/
 %exclude %{_bindir}/nix*-test
 %endif
 %exclude %{_bindir}/nix-daemon
-%{_libdir}/*.so
 %{_libexecdir}/nix
 %config(noreplace) %{_sysconfdir}/nix/nix.conf
 %config(noreplace) %{_sysconfdir}/nix/registry.json
@@ -208,13 +201,6 @@ cp %{SOURCE1} %{SOURCE2} %{buildroot}/etc/nix/
 %{_sysconfdir}/profile.d/nix-daemon.*sh
 %{_prefix}/lib/systemd/system/nix-daemon.*
 %{_prefix}/lib/tmpfiles.d/nix-daemon.conf
-
-
-%files devel
-%{_includedir}/nix
-%{_includedir}/nix_api_*.h
-%{_includedir}/nix_api_*.hh
-%{_libdir}/pkgconfig/*.pc
 
 
 %if %{with docs}
@@ -233,6 +219,7 @@ cp %{SOURCE1} %{SOURCE2} %{buildroot}/etc/nix/
 * Wed Sep 10 2025 Jens Petersen <petersen@redhat.com> - 2.31.1-1
 - https://github.com/NixOS/nix/blob/2.31.1/doc/manual/source/release-notes/rl-2.31.md
 - use readline (#2388768)
+- use static libs and drop devel package
 - disable perl binding
 
 * Sat Aug 16 2025 Jens Petersen <petersen@redhat.com> - 2.30.2-2
