@@ -15,8 +15,6 @@ Source0:        https://github.com/NixOS/nix/archive/v%{version}/%{name}-%{versi
 Source1:        nix.conf
 Source2:        registry.json
 Source3:        README.md
-# needed for distros
-Patch0:         nix-perl-vendorarch.patch
 
 # https://nixos.org/manual/nix/unstable/installation/prerequisites-source
 # missing aws-cpp-sdk-s3 aws-c-auth aws-c-s3
@@ -58,10 +56,6 @@ BuildRequires:  lowdown
 BuildRequires:  lowdown-devel
 BuildRequires:  meson
 BuildRequires:  openssl-devel
-BuildRequires:  perl-devel
-BuildRequires:  perl-macros
-BuildRequires:  perl-DBD-SQLite
-BuildRequires:  perl-ExtUtils-ParseXS
 %if %{with tests}
 #BuildRequires:  rapidcheck-devel
 %endif
@@ -139,6 +133,7 @@ cp -p %{SOURCE3} README.fedora.md
 MESON_OPTS=(
     --sysconf=%{_sysconfdir}
     --localstatedir=/nix/var
+    -Dbindings=false
     -Dlibstore:sandbox-shell=%{_bindir}/busybox
     -Dnix:profile-dir=%{_sysconfdir}/profile.d
     )
@@ -197,8 +192,6 @@ cp %{SOURCE1} %{SOURCE2} %{buildroot}/etc/nix/
 %endif
 %exclude %{_bindir}/nix-daemon
 %{_libdir}/*.so
-%{perl_vendorarch}/Nix
-%{perl_vendorarch}/auto/Nix
 %{_libexecdir}/nix
 %config(noreplace) %{_sysconfdir}/nix/nix.conf
 %config(noreplace) %{_sysconfdir}/nix/registry.json
@@ -238,6 +231,7 @@ cp %{SOURCE1} %{SOURCE2} %{buildroot}/etc/nix/
 %changelog
 * Wed Sep 10 2025 Jens Petersen <petersen@redhat.com> - 2.31.1-1
 - https://github.com/NixOS/nix/blob/2.31.1/doc/manual/source/release-notes/rl-2.31.md
+- disable perl binding
 
 * Sat Aug 16 2025 Jens Petersen <petersen@redhat.com> - 2.30.2-2
 - fix nix-devel requires
