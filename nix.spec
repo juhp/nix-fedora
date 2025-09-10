@@ -75,20 +75,10 @@ it can be used equally well under other Unix systems.
 See the README.fedora.md file for setup instructions.
 
 
-%package core
-Summary:        Nix tools
-Recommends:     busybox
-
-%description core
-The package provide the Nix package manager programs.
-
-See the README.fedora.md file for setup instructions.
-
-
 %package daemon
 Summary:        The nix daemon
 BuildArch:      noarch
-Requires:       %{name}-core%{?_isa} = %{version}-%{release}
+Requires:       %{name}%{?_isa} = %{version}-%{release}
 
 %description daemon
 This package provides nix-daemon and associated files.
@@ -107,7 +97,7 @@ The %{name}-doc package contains documentation files for %{name}.
 %if %{with tests}
 %package test
 Summary:        Nix test programs
-Requires:       %{name}-core%{?_isa} = %{version}-%{release}
+Requires:       %{name}%{?_isa} = %{version}-%{release}
 
 %description test
 This package provides the nix-test programs.
@@ -178,7 +168,7 @@ rm -r %{buildroot}%{_includedir}/nix* %{buildroot}%{_libdir}/libnix*.a %{buildro
 %systemd_postun_with_restart nix-daemon.service
 
 
-%files core
+%files
 %license COPYING
 %doc README.md README.fedora.md
 %{_bindir}/nix*
@@ -218,6 +208,7 @@ rm -r %{buildroot}%{_includedir}/nix* %{buildroot}%{_libdir}/libnix*.a %{buildro
 %changelog
 * Wed Sep 10 2025 Jens Petersen <petersen@redhat.com> - 2.31.1-1
 - https://github.com/NixOS/nix/blob/2.31.1/doc/manual/source/release-notes/rl-2.31.md
+- rename nix-core to base package
 - use readline (#2388768)
 - use static libs and drop devel package
 - disable perl binding
