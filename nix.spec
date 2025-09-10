@@ -33,7 +33,6 @@ BuildRequires:  cmake
 %if %{with docs}
 BuildRequires:  doxygen
 %endif
-BuildRequires:  editline-devel
 BuildRequires:  flex
 BuildRequires:  gc-devel
 BuildRequires:  gcc-c++
@@ -59,6 +58,7 @@ BuildRequires:  openssl-devel
 %if %{with tests}
 #BuildRequires:  rapidcheck-devel
 %endif
+BuildRequires:  readline-devel
 BuildRequires:  sqlite-devel
 BuildRequires:  systemd-rpm-macros
 BuildRequires:  toml11-devel
@@ -134,6 +134,7 @@ MESON_OPTS=(
     --sysconf=%{_sysconfdir}
     --localstatedir=/nix/var
     -Dbindings=false
+    -Dlibcmd:readline-flavor=readline
     -Dlibstore:sandbox-shell=%{_bindir}/busybox
     -Dnix:profile-dir=%{_sysconfdir}/profile.d
     )
@@ -231,6 +232,7 @@ cp %{SOURCE1} %{SOURCE2} %{buildroot}/etc/nix/
 %changelog
 * Wed Sep 10 2025 Jens Petersen <petersen@redhat.com> - 2.31.1-1
 - https://github.com/NixOS/nix/blob/2.31.1/doc/manual/source/release-notes/rl-2.31.md
+- use readline (#2388768)
 - disable perl binding
 
 * Sat Aug 16 2025 Jens Petersen <petersen@redhat.com> - 2.30.2-2
