@@ -6,7 +6,7 @@
 
 Name:           nix
 Version:        2.31.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A purely functional package manager
 
 License:        LGPL-2.1-or-later
@@ -78,7 +78,7 @@ See the README.fedora.md file for setup instructions.
 %package daemon
 Summary:        The nix daemon
 BuildArch:      noarch
-Requires:       %{name}%{?_isa} = %{version}-%{release}
+Requires:       %{name} = %{version}-%{release}
 
 %description daemon
 This package provides nix-daemon and associated files.
@@ -203,6 +203,9 @@ rm -r %{buildroot}%{_includedir}/nix* %{buildroot}%{_libdir}/libnix*.a %{buildro
 
 
 %changelog
+* Thu Sep 11 2025 Jens Petersen <petersen@redhat.com> - 2.31.1-2
+- noarch nix-daemon subpackage cannot use _isa requires
+
 * Wed Sep 10 2025 Jens Petersen <petersen@redhat.com> - 2.31.1-1
 - https://github.com/NixOS/nix/blob/2.31.1/doc/manual/source/release-notes/rl-2.31.md
 - rename nix-core to base package
