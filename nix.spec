@@ -6,7 +6,7 @@
 
 Name:           nix
 Version:        2.31.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        A purely functional package manager
 
 License:        LGPL-2.1-or-later
@@ -15,6 +15,8 @@ Source0:        https://github.com/NixOS/nix/archive/%{version}/%{name}-%{versio
 Source1:        nix.conf
 Source2:        registry.json
 Source3:        README.md
+# https://github.com/NixOS/nix/issues/13960
+Patch0:         https://patch-diff.githubusercontent.com/raw/NixOS/nix/pull/13966.patch
 
 # https://nixos.org/manual/nix/unstable/installation/prerequisites-source
 # missing aws-cpp-sdk-s3 aws-c-auth aws-c-s3
@@ -63,6 +65,8 @@ BuildRequires:  sqlite-devel
 BuildRequires:  systemd-rpm-macros
 BuildRequires:  toml11-devel
 BuildRequires:  xz-devel
+Requires:       nix-libs%{?_isa} = %{version}-%{release}
+Recommends:     busybox
 
 %description
 Nix is a purely functional package manager. It allows multiple
@@ -84,6 +88,15 @@ Requires:       %{name} = %{version}-%{release}
 This package provides nix-daemon and associated files.
 
 
+%package devel
+Summary:        Development files for %{name}
+Requires:       %{name}-libs%{?_isa} = %{version}-%{release}
+
+%description devel
+The %{name}-devel package contains libraries and header files for
+developing applications that use %{name}.
+
+
 %if %{with docs}
 %package doc
 Summary:        Documentation files for %{name}
@@ -92,6 +105,13 @@ BuildArch:      noarch
 %description doc
 The %{name}-doc package contains documentation files for %{name}.
 %endif
+
+
+%package libs
+Summary:        Runtime libraries for %{name}
+
+%description libs
+The package provides the the runtime libraries for %{name}.
 
 
 %if %{with tests}
@@ -116,7 +136,6 @@ MESON_OPTS=(
     --localstatedir=/nix/var
     --libexecdir=%{_libexecdir}
     -Dbindings=false
-    -Ddefault_library=static
     -Ddoc-gen=%[%{with docs}?"true":"false"]
     -Dlibcmd:readline-flavor=readline
     -Dlibstore:sandbox-shell=%{_bindir}/busybox
@@ -143,8 +162,6 @@ MESON_OPTS=(
 mkdir -p %{buildroot}/etc/nix
 cp %{SOURCE1} %{SOURCE2} %{buildroot}/etc/nix/
 
-rm -r %{buildroot}%{_includedir}/nix* %{buildroot}%{_libdir}/libnix*.a %{buildroot}%{_libdir}/pkgconfig/*.pc
-
 
 %if %{with tests}
 %check
@@ -166,7 +183,6 @@ rm -r %{buildroot}%{_includedir}/nix* %{buildroot}%{_libdir}/libnix*.a %{buildro
 
 
 %files
-%license COPYING
 %doc README.md README.fedora.md
 %{_bindir}/nix*
 %if %{with tests}
@@ -190,11 +206,23 @@ rm -r %{buildroot}%{_includedir}/nix* %{buildroot}%{_libdir}/libnix*.a %{buildro
 %{_prefix}/lib/tmpfiles.d/nix-daemon.conf
 
 
+%files devel
+%{_includedir}/nix
+%{_includedir}/nix_api_*.h
+%{_includedir}/nix_api_*.hh
+%{_libdir}/libnix*.so
+%{_libdir}/pkgconfig/*.pc
+
+
 %if %{with docs}
 %files doc
 %{_defaultdocdir}/%{name}
 %endif
 
+
+%files libs
+%license COPYING
+%{_libdir}/libnix*.so.0
 
 %if %{with tests}
 %files test
@@ -203,6 +231,10 @@ rm -r %{buildroot}%{_includedir}/nix* %{buildroot}%{_libdir}/libnix*.a %{buildro
 
 
 %changelog
+* Fri Sep 12 2025 Jens Petersen <petersen@redhat.com> - 2.31.1-3
+- revert to shared libs, add libs subpackage and restore devel
+- apply upstream submitted PR to enable soname versioning (#13966)
+
 * Thu Sep 11 2025 Jens Petersen <petersen@redhat.com> - 2.31.1-2
 - noarch nix-daemon subpackage cannot use _isa requires
 
