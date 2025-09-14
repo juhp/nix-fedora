@@ -66,7 +66,10 @@ BuildRequires:  systemd-rpm-macros
 BuildRequires:  toml11-devel
 BuildRequires:  xz-devel
 Requires:       nix-libs%{?_isa} = %{version}-%{release}
+Recommends:     nix-daemon = %{version}-%{release}
+%ifarch x86_64 aarch64 ppc64le
 Recommends:     busybox
+%endif
 
 %description
 Nix is a purely functional package manager. It allows multiple
