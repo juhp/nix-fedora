@@ -17,7 +17,8 @@ Source0:        https://github.com/NixOS/nix/archive/%{version}/%{name}-%{versio
 Source1:        nix.conf
 Source2:        registry.json
 Source3:        README.md
-Patch0:         nix-rpath.patch
+# https://github.com/NixOS/nix/pull/13970 and related issues
+Patch0:         nix-meson-soname-rpath.patch
 
 # https://nixos.org/manual/nix/unstable/installation/prerequisites-source
 # missing aws-cpp-sdk-s3 aws-c-auth aws-c-s3
@@ -31,6 +32,7 @@ BuildRequires:  brotli-devel
 %ifarch x86_64 aarch64 ppc64le
 BuildRequires:  busybox
 %endif
+# needed for toml11
 BuildRequires:  cmake
 %if %{with docs}
 BuildRequires:  doxygen
