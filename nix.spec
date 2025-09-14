@@ -131,7 +131,7 @@ This package provides the nix-test programs.
 %prep
 %autosetup -p1
 
-cp -p %{SOURCE3} README.fedora.md
+install -p -m 0644 %{SOURCE3} README.fedora.md
 
 
 %build
