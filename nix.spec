@@ -4,8 +4,6 @@
 # and missing rapidcheck
 %bcond tests 0
 
-%global _nixlibdir %{_libdir}/nix
-
 Name:           nix
 Version:        2.31.1
 Release:        4%{?dist}
@@ -17,8 +15,9 @@ Source0:        https://github.com/NixOS/nix/archive/%{version}/%{name}-%{versio
 Source1:        nix.conf
 Source2:        registry.json
 Source3:        README.md
+# https://github.com/NixOS/nix/issues/13960
 # https://github.com/NixOS/nix/pull/13970 and related issues
-Patch0:         nix-meson-soname-rpath.patch
+Patch0:         https://patch-diff.githubusercontent.com/raw/NixOS/nix/pull/13966.patch
 
 # https://nixos.org/manual/nix/unstable/installation/prerequisites-source
 # missing aws-cpp-sdk-s3 aws-c-auth aws-c-s3
@@ -67,6 +66,7 @@ BuildRequires:  sqlite-devel
 BuildRequires:  systemd-rpm-macros
 BuildRequires:  toml11-devel
 BuildRequires:  xz-devel
+Requires:       nix-libs%{?_isa} = %{version}-%{release}
 Recommends:     nix-daemon = %{version}-%{release}
 %ifarch x86_64 aarch64 ppc64le
 Recommends:     busybox
@@ -94,7 +94,7 @@ This package provides nix-daemon and associated files.
 
 %package devel
 Summary:        Development files for %{name}
-Requires:       %{name}%{?_isa} = %{version}-%{release}
+Requires:       %{name}-libs%{?_isa} = %{version}-%{release}
 
 %description devel
 The %{name}-devel package contains libraries and header files for
@@ -111,6 +111,13 @@ The %{name}-doc package contains documentation files for %{name}.
 %endif
 
 
+%package libs
+Summary:        Runtime libraries for %{name}
+
+%description libs
+The package provides the the runtime libraries for %{name}.
+
+
 %if %{with tests}
 %package test
 Summary:        Nix test programs
@@ -124,15 +131,11 @@ This package provides the nix-test programs.
 %prep
 %autosetup -p1
 
-# replace placeholders from rpath patch
-sed -i -e 's!@NIXLIBDIR@!%{_nixlibdir}!' src/*/meson.build
-
-install -p -m 644 %{SOURCE3} README.fedora.md
+cp -p %{SOURCE3} README.fedora.md
 
 
 %build
 MESON_OPTS=(
-    --libdir=%{_nixlibdir}
     --sysconf=%{_sysconfdir}
     --localstatedir=/nix/var
     --libexecdir=%{_libexecdir}
@@ -163,11 +166,9 @@ MESON_OPTS=(
 mkdir -p %{buildroot}/etc/nix
 cp %{SOURCE1} %{SOURCE2} %{buildroot}/etc/nix/
 
-mv %{buildroot}{%{_nixlibdir}/pkgconfig,%{_libdir}}
-
 
 %check
-LD_LIBRARY_PATH=%{buildroot}%{_nixlibdir} %{buildroot}%{_bindir}/nix --help
+LD_LIBRARY_PATH=%{buildroot}%{_libdir} %{buildroot}%{_bindir}/nix --help
 %if %{with tests}
 #export TEST_ROOT=/var/home/petersen/tmp/nix-test
 %meson_test
@@ -187,11 +188,8 @@ LD_LIBRARY_PATH=%{buildroot}%{_nixlibdir} %{buildroot}%{_bindir}/nix --help
 
 
 %files
-%license COPYING
 %doc README.md README.fedora.md
 %{_bindir}/nix*
-%dir %{_nixlibdir}
-%{_nixlibdir}/libnix*.so
 %if %{with tests}
 %exclude %{_bindir}/nix*-test
 %endif
@@ -217,6 +215,7 @@ LD_LIBRARY_PATH=%{buildroot}%{_nixlibdir} %{buildroot}%{_bindir}/nix --help
 %{_includedir}/nix
 %{_includedir}/nix_api_*.h
 %{_includedir}/nix_api_*.hh
+%{_libdir}/libnix*.so
 %{_libdir}/pkgconfig/*.pc
 
 
@@ -226,6 +225,10 @@ LD_LIBRARY_PATH=%{buildroot}%{_nixlibdir} %{buildroot}%{_bindir}/nix --help
 %endif
 
 
+%files libs
+%license COPYING
+%{_libdir}/libnix*.so.0
+
 %if %{with tests}
 %files test
 %{_bindir}/nix*-test
@@ -234,7 +237,7 @@ LD_LIBRARY_PATH=%{buildroot}%{_nixlibdir} %{buildroot}%{_bindir}/nix --help
 
 %changelog
 * Sun Sep 14 2025 Jens Petersen <petersen@redhat.com> - 2.31.1-4
-- install libs under libdir/nix with RUNPATH instead of SONAME
+- add simple check with LD_LIBRARY_PATH
 
 * Fri Sep 12 2025 Jens Petersen <petersen@redhat.com> - 2.31.1-3
 - revert to shared libs, add libs subpackage and restore devel

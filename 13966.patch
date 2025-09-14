@@ -1,13 +1,36 @@
+From bdbc739d6e87f2abf2ded4d38bb0e161f457eb68 Mon Sep 17 00:00:00 2001
+From: Jens Petersen <petersen@redhat.com>
+Date: Fri, 12 Sep 2025 11:15:29 +0800
+Subject: [PATCH] meson: add soversion to libraries (#13960)
+
+---
+ src/libcmd/meson.build                | 1 +
+ src/libexpr-c/meson.build             | 1 +
+ src/libexpr-test-support/meson.build  | 1 +
+ src/libexpr/meson.build               | 1 +
+ src/libfetchers-c/meson.build         | 1 +
+ src/libfetchers/meson.build           | 1 +
+ src/libflake-c/meson.build            | 1 +
+ src/libflake/meson.build              | 1 +
+ src/libmain-c/meson.build             | 1 +
+ src/libmain/meson.build               | 1 +
+ src/libstore-c/meson.build            | 1 +
+ src/libstore-test-support/meson.build | 1 +
+ src/libstore/meson.build              | 1 +
+ src/libutil-c/meson.build             | 1 +
+ src/libutil-test-support/meson.build  | 1 +
+ src/libutil/meson.build               | 1 +
+ 16 files changed, 16 insertions(+)
+
 diff --git a/src/libcmd/meson.build b/src/libcmd/meson.build
 index 24e0752462c..6478fb226f5 100644
 --- a/src/libcmd/meson.build
 +++ b/src/libcmd/meson.build
-@@ -95,6 +95,8 @@ this_library = library(
+@@ -95,6 +95,7 @@ this_library = library(
    'nixcmd',
    sources,
    config_priv_h,
 +  soversion : 0,
-+  install_rpath : '@NIXLIBDIR@',
    dependencies : deps_public + deps_private + deps_other,
    include_directories : include_dirs,
    link_args : linker_export_flags,
@@ -15,12 +38,11 @@ diff --git a/src/libexpr-c/meson.build b/src/libexpr-c/meson.build
 index 7c014d61d37..01e60680b0d 100644
 --- a/src/libexpr-c/meson.build
 +++ b/src/libexpr-c/meson.build
-@@ -50,6 +50,8 @@ subdir('nix-meson-build-support/windows-version')
+@@ -50,6 +50,7 @@ subdir('nix-meson-build-support/windows-version')
  this_library = library(
    'nixexprc',
    sources,
 +  soversion : 0,
-+  install_rpath : '@NIXLIBDIR@',
    dependencies : deps_public + deps_private + deps_other,
    include_directories : include_dirs,
    link_args : linker_export_flags,
@@ -28,12 +50,11 @@ diff --git a/src/libexpr-test-support/meson.build b/src/libexpr-test-support/mes
 index d762eb85e32..1bc173ee453 100644
 --- a/src/libexpr-test-support/meson.build
 +++ b/src/libexpr-test-support/meson.build
-@@ -44,6 +44,8 @@ subdir('nix-meson-build-support/windows-version')
+@@ -44,6 +44,7 @@ subdir('nix-meson-build-support/windows-version')
  this_library = library(
    'nix-expr-test-support',
    sources,
 +  soversion : 0,
-+  install_rpath : '@NIXLIBDIR@',
    dependencies : deps_public + deps_private + deps_other,
    include_directories : include_dirs,
    # TODO: Remove `-lrapidcheck` when https://github.com/emil-e/rapidcheck/pull/326
@@ -41,12 +62,11 @@ diff --git a/src/libexpr/meson.build b/src/libexpr/meson.build
 index 40d3f390b4b..409f4fac814 100644
 --- a/src/libexpr/meson.build
 +++ b/src/libexpr/meson.build
-@@ -181,6 +181,8 @@ this_library = library(
+@@ -181,6 +181,7 @@ this_library = library(
    parser_tab,
    lexer_tab,
    generated_headers,
 +  soversion : 0,
-+  install_rpath : '@NIXLIBDIR@',
    dependencies : deps_public + deps_private + deps_other,
    include_directories : include_dirs,
    link_args : linker_export_flags,
@@ -54,12 +74,11 @@ diff --git a/src/libfetchers-c/meson.build b/src/libfetchers-c/meson.build
 index 8542744b4da..81b63780b71 100644
 --- a/src/libfetchers-c/meson.build
 +++ b/src/libfetchers-c/meson.build
-@@ -53,6 +53,8 @@ subdir('nix-meson-build-support/windows-version')
+@@ -53,6 +53,7 @@ subdir('nix-meson-build-support/windows-version')
  this_library = library(
    'nixfetchersc',
    sources,
 +  soversion : 0,
-+  install_rpath : '@NIXLIBDIR@',
    dependencies : deps_public + deps_private + deps_other,
    include_directories : include_dirs,
    link_args : linker_export_flags,
@@ -67,12 +86,11 @@ diff --git a/src/libfetchers/meson.build b/src/libfetchers/meson.build
 index 922a2c49199..7c5ce1bc9d3 100644
 --- a/src/libfetchers/meson.build
 +++ b/src/libfetchers/meson.build
-@@ -61,6 +61,8 @@ subdir('nix-meson-build-support/windows-version')
+@@ -61,6 +61,7 @@ subdir('nix-meson-build-support/windows-version')
  this_library = library(
    'nixfetchers',
    sources,
 +  soversion : 0,
-+  install_rpath : '@NIXLIBDIR@',
    dependencies : deps_public + deps_private + deps_other,
    include_directories : include_dirs,
    link_args : linker_export_flags,
@@ -80,12 +98,11 @@ diff --git a/src/libflake-c/meson.build b/src/libflake-c/meson.build
 index 933e06d9037..e72694c2e34 100644
 --- a/src/libflake-c/meson.build
 +++ b/src/libflake-c/meson.build
-@@ -53,6 +53,8 @@ subdir('nix-meson-build-support/windows-version')
+@@ -53,6 +53,7 @@ subdir('nix-meson-build-support/windows-version')
  this_library = library(
    'nixflakec',
    sources,
 +  soversion : 0,
-+  install_rpath : '@NIXLIBDIR@',
    dependencies : deps_public + deps_private + deps_other,
    include_directories : include_dirs,
    link_args : linker_export_flags,
@@ -93,12 +110,11 @@ diff --git a/src/libflake/meson.build b/src/libflake/meson.build
 index 191d8f0680c..cb5f128a45f 100644
 --- a/src/libflake/meson.build
 +++ b/src/libflake/meson.build
-@@ -58,6 +58,8 @@ this_library = library(
+@@ -58,6 +58,7 @@ this_library = library(
    'nixflake',
    sources,
    generated_headers,
 +  soversion : 0,
-+  install_rpath : '@NIXLIBDIR@',
    dependencies : deps_public + deps_private + deps_other,
    include_directories : include_dirs,
    link_args : linker_export_flags,
@@ -106,12 +122,11 @@ diff --git a/src/libmain-c/meson.build b/src/libmain-c/meson.build
 index 9e26ad8adf3..20b77aef23e 100644
 --- a/src/libmain-c/meson.build
 +++ b/src/libmain-c/meson.build
-@@ -45,6 +45,8 @@ subdir('nix-meson-build-support/windows-version')
+@@ -45,6 +45,7 @@ subdir('nix-meson-build-support/windows-version')
  this_library = library(
    'nixmainc',
    sources,
 +  soversion : 0,
-+  install_rpath : '@NIXLIBDIR@',
    dependencies : deps_public + deps_private + deps_other,
    include_directories : include_dirs,
    link_args : linker_export_flags,
@@ -119,12 +134,11 @@ diff --git a/src/libmain/meson.build b/src/libmain/meson.build
 index 4a90d2d83b6..e7096746212 100644
 --- a/src/libmain/meson.build
 +++ b/src/libmain/meson.build
-@@ -77,6 +77,8 @@ this_library = library(
+@@ -77,6 +77,7 @@ this_library = library(
    'nixmain',
    sources,
    config_priv_h,
 +  soversion : 0,
-+  install_rpath : '@NIXLIBDIR@',
    dependencies : deps_public + deps_private + deps_other,
    include_directories : include_dirs,
    link_args : linker_export_flags,
@@ -132,12 +146,11 @@ diff --git a/src/libstore-c/meson.build b/src/libstore-c/meson.build
 index f8eaef80395..a4888578082 100644
 --- a/src/libstore-c/meson.build
 +++ b/src/libstore-c/meson.build
-@@ -46,6 +46,8 @@ subdir('nix-meson-build-support/windows-version')
+@@ -46,6 +46,7 @@ subdir('nix-meson-build-support/windows-version')
  this_library = library(
    'nixstorec',
    sources,
 +  soversion : 0,
-+  install_rpath : '@NIXLIBDIR@',
    dependencies : deps_public + deps_private + deps_other,
    include_directories : include_dirs,
    link_args : linker_export_flags,
@@ -145,12 +158,11 @@ diff --git a/src/libstore-test-support/meson.build b/src/libstore-test-support/m
 index b2977941f86..3a3ffe36e92 100644
 --- a/src/libstore-test-support/meson.build
 +++ b/src/libstore-test-support/meson.build
-@@ -44,6 +44,8 @@ subdir('nix-meson-build-support/windows-version')
+@@ -44,6 +44,7 @@ subdir('nix-meson-build-support/windows-version')
  this_library = library(
    'nix-store-test-support',
    sources,
 +  soversion : 0,
-+  install_rpath : '@NIXLIBDIR@',
    dependencies : deps_public + deps_private + deps_other,
    include_directories : include_dirs,
    # TODO: Remove `-lrapidcheck` when https://github.com/emil-e/rapidcheck/pull/326
@@ -158,12 +170,11 @@ diff --git a/src/libstore/meson.build b/src/libstore/meson.build
 index 7aeacbab79b..77517bdfef5 100644
 --- a/src/libstore/meson.build
 +++ b/src/libstore/meson.build
-@@ -363,6 +363,8 @@ this_library = library(
+@@ -363,6 +363,7 @@ this_library = library(
    generated_headers,
    sources,
    config_priv_h,
 +  soversion : 0,
-+  install_rpath : '@NIXLIBDIR@',
    dependencies : deps_public + deps_private + deps_other,
    include_directories : include_dirs,
    link_args : linker_export_flags,
@@ -171,12 +182,11 @@ diff --git a/src/libutil-c/meson.build b/src/libutil-c/meson.build
 index 8131c517cd8..9e1a43e80f6 100644
 --- a/src/libutil-c/meson.build
 +++ b/src/libutil-c/meson.build
-@@ -53,6 +53,8 @@ this_library = library(
+@@ -53,6 +53,7 @@ this_library = library(
    'nixutilc',
    sources,
    config_priv_h,
 +  soversion : 0,
-+  install_rpath : '@NIXLIBDIR@',
    dependencies : deps_public + deps_private + deps_other,
    include_directories : include_dirs,
    link_args : linker_export_flags,
@@ -184,22 +194,23 @@ diff --git a/src/libutil-test-support/meson.build b/src/libutil-test-support/mes
 index 910f1d88164..9ad139edb56 100644
 --- a/src/libutil-test-support/meson.build
 +++ b/src/libutil-test-support/meson.build
-@@ -41,6 +41,8 @@ subdir('nix-meson-build-support/windows-version')
+@@ -41,6 +41,7 @@ subdir('nix-meson-build-support/windows-version')
  this_library = library(
    'nix-util-test-support',
    sources,
 +  soversion : 0,
-+  install_rpath : '@NIXLIBDIR@',
    dependencies : deps_public + deps_private + deps_other,
    include_directories : include_dirs,
    # TODO: Remove `-lrapidcheck` when https://github.com/emil-e/rapidcheck/pull/326
---- nix-2.31.1/src/nix/meson.build~	2025-09-01 15:52:24.000000000 +0800
-+++ nix-2.31.1/src/nix/meson.build	2025-09-14 18:41:52.626237173 +0800
-@@ -188,6 +188,7 @@
+diff --git a/src/libutil/meson.build b/src/libutil/meson.build
+index cdffc892ae7..131f71034ee 100644
+--- a/src/libutil/meson.build
++++ b/src/libutil/meson.build
+@@ -197,6 +197,7 @@ subdir('nix-meson-build-support/windows-version')
+ this_library = library(
+   'nixutil',
+   sources,
++  soversion : 0,
+   dependencies : deps_public + deps_private + deps_other,
    include_directories : include_dirs,
    link_args : linker_export_flags,
-   install : true,
-+  install_rpath : '@NIXLIBDIR@',
-   cpp_pch : do_pch ? [ 'pch/precompiled-headers.hh' ] : [],
- )
- 
