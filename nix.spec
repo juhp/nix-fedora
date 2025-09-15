@@ -6,7 +6,7 @@
 
 Name:           nix
 Version:        2.31.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        A purely functional package manager
 
 License:        LGPL-2.1-or-later
@@ -17,7 +17,7 @@ Source2:        registry.json
 Source3:        README.md
 # https://github.com/NixOS/nix/issues/13960
 # https://github.com/NixOS/nix/pull/13970 and related issues
-Patch0:         https://patch-diff.githubusercontent.com/raw/NixOS/nix/pull/13966.patch
+Patch0:         https://patch-diff.githubusercontent.com/raw/NixOS/nix/pull/13995.patch
 
 # https://nixos.org/manual/nix/unstable/installation/prerequisites-source
 # missing aws-cpp-sdk-s3 aws-c-auth aws-c-s3
@@ -227,7 +227,7 @@ LD_LIBRARY_PATH=%{buildroot}%{_libdir} %{buildroot}%{_bindir}/nix --help
 
 %files libs
 %license COPYING
-%{_libdir}/libnix*.so.0
+%{_libdir}/libnix*.so.*
 
 %if %{with tests}
 %files test
@@ -236,6 +236,9 @@ LD_LIBRARY_PATH=%{buildroot}%{_libdir} %{buildroot}%{_bindir}/nix --help
 
 
 %changelog
+* Mon Sep 15 2025 Jens Petersen <petersen@redhat.com> - 2.31.1-5
+- set the soversion to the nix version (#13995)
+
 * Sun Sep 14 2025 Jens Petersen <petersen@redhat.com> - 2.31.1-4
 - add simple check with LD_LIBRARY_PATH
 

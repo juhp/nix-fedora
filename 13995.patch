@@ -1,0 +1,406 @@
+commit 0e3d58e04aa0e5a8dfb4cca059f1258f9cdbd721
+Author: Jens Petersen <petersen@redhat.com>
+Date:   Mon Sep 15 14:38:08 2025 +0800
+
+    meson: add soversion with nix version to give SONAME to libs (#13960, #13979)
+
+diff --git a/src/libcmd/meson.build b/src/libcmd/meson.build
+index 24e075246..11870ed12 100644
+--- a/src/libcmd/meson.build
++++ b/src/libcmd/meson.build
+@@ -95,6 +95,7 @@ this_library = library(
+   'nixcmd',
+   sources,
+   config_priv_h,
++  soversion : meson.project_version(),
+   dependencies : deps_public + deps_private + deps_other,
+   include_directories : include_dirs,
+   link_args : linker_export_flags,
+diff --git a/src/libexpr-c/meson.build b/src/libexpr-c/meson.build
+index 7c014d61d..40b87fff9 100644
+--- a/src/libexpr-c/meson.build
++++ b/src/libexpr-c/meson.build
+@@ -50,6 +50,7 @@ subdir('nix-meson-build-support/windows-version')
+ this_library = library(
+   'nixexprc',
+   sources,
++  soversion : meson.project_version(),
+   dependencies : deps_public + deps_private + deps_other,
+   include_directories : include_dirs,
+   link_args : linker_export_flags,
+diff --git a/src/libexpr-test-support/meson.build b/src/libexpr-test-support/meson.build
+index d762eb85e..735f85f6a 100644
+--- a/src/libexpr-test-support/meson.build
++++ b/src/libexpr-test-support/meson.build
+@@ -44,6 +44,7 @@ subdir('nix-meson-build-support/windows-version')
+ this_library = library(
+   'nix-expr-test-support',
+   sources,
++  soversion : meson.project_version(),
+   dependencies : deps_public + deps_private + deps_other,
+   include_directories : include_dirs,
+   # TODO: Remove `-lrapidcheck` when https://github.com/emil-e/rapidcheck/pull/326
+diff --git a/src/libexpr/meson.build b/src/libexpr/meson.build
+index 40d3f390b..d1a2692cc 100644
+--- a/src/libexpr/meson.build
++++ b/src/libexpr/meson.build
+@@ -181,6 +181,7 @@ this_library = library(
+   parser_tab,
+   lexer_tab,
+   generated_headers,
++  soversion : meson.project_version(),
+   dependencies : deps_public + deps_private + deps_other,
+   include_directories : include_dirs,
+   link_args : linker_export_flags,
+diff --git a/src/libfetchers-c/meson.build b/src/libfetchers-c/meson.build
+index 8542744b4..0840040ca 100644
+--- a/src/libfetchers-c/meson.build
++++ b/src/libfetchers-c/meson.build
+@@ -53,6 +53,7 @@ subdir('nix-meson-build-support/windows-version')
+ this_library = library(
+   'nixfetchersc',
+   sources,
++  soversion : meson.project_version(),
+   dependencies : deps_public + deps_private + deps_other,
+   include_directories : include_dirs,
+   link_args : linker_export_flags,
+diff --git a/src/libfetchers/meson.build b/src/libfetchers/meson.build
+index 922a2c491..7e088914e 100644
+--- a/src/libfetchers/meson.build
++++ b/src/libfetchers/meson.build
+@@ -61,6 +61,7 @@ subdir('nix-meson-build-support/windows-version')
+ this_library = library(
+   'nixfetchers',
+   sources,
++  soversion : meson.project_version(),
+   dependencies : deps_public + deps_private + deps_other,
+   include_directories : include_dirs,
+   link_args : linker_export_flags,
+diff --git a/src/libflake-c/meson.build b/src/libflake-c/meson.build
+index 933e06d90..cfe3eae3f 100644
+--- a/src/libflake-c/meson.build
++++ b/src/libflake-c/meson.build
+@@ -53,6 +53,7 @@ subdir('nix-meson-build-support/windows-version')
+ this_library = library(
+   'nixflakec',
+   sources,
++  soversion : meson.project_version(),
+   dependencies : deps_public + deps_private + deps_other,
+   include_directories : include_dirs,
+   link_args : linker_export_flags,
+diff --git a/src/libflake/meson.build b/src/libflake/meson.build
+index 191d8f068..37a552ef8 100644
+--- a/src/libflake/meson.build
++++ b/src/libflake/meson.build
+@@ -58,6 +58,7 @@ this_library = library(
+   'nixflake',
+   sources,
+   generated_headers,
++  soversion : meson.project_version(),
+   dependencies : deps_public + deps_private + deps_other,
+   include_directories : include_dirs,
+   link_args : linker_export_flags,
+diff --git a/src/libmain-c/meson.build b/src/libmain-c/meson.build
+index 9e26ad8ad..b37ac6950 100644
+--- a/src/libmain-c/meson.build
++++ b/src/libmain-c/meson.build
+@@ -45,6 +45,7 @@ subdir('nix-meson-build-support/windows-version')
+ this_library = library(
+   'nixmainc',
+   sources,
++  soversion : meson.project_version(),
+   dependencies : deps_public + deps_private + deps_other,
+   include_directories : include_dirs,
+   link_args : linker_export_flags,
+diff --git a/src/libmain/meson.build b/src/libmain/meson.build
+index 4a90d2d83..aa2981548 100644
+--- a/src/libmain/meson.build
++++ b/src/libmain/meson.build
+@@ -77,6 +77,7 @@ this_library = library(
+   'nixmain',
+   sources,
+   config_priv_h,
++  soversion : meson.project_version(),
+   dependencies : deps_public + deps_private + deps_other,
+   include_directories : include_dirs,
+   link_args : linker_export_flags,
+diff --git a/src/libstore-c/meson.build b/src/libstore-c/meson.build
+index f8eaef803..7266c6046 100644
+--- a/src/libstore-c/meson.build
++++ b/src/libstore-c/meson.build
+@@ -46,6 +46,7 @@ subdir('nix-meson-build-support/windows-version')
+ this_library = library(
+   'nixstorec',
+   sources,
++  soversion : meson.project_version(),
+   dependencies : deps_public + deps_private + deps_other,
+   include_directories : include_dirs,
+   link_args : linker_export_flags,
+diff --git a/src/libstore-test-support/meson.build b/src/libstore-test-support/meson.build
+index b2977941f..523c46ed9 100644
+--- a/src/libstore-test-support/meson.build
++++ b/src/libstore-test-support/meson.build
+@@ -44,6 +44,7 @@ subdir('nix-meson-build-support/windows-version')
+ this_library = library(
+   'nix-store-test-support',
+   sources,
++  soversion : meson.project_version(),
+   dependencies : deps_public + deps_private + deps_other,
+   include_directories : include_dirs,
+   # TODO: Remove `-lrapidcheck` when https://github.com/emil-e/rapidcheck/pull/326
+diff --git a/src/libstore/meson.build b/src/libstore/meson.build
+index 7aeacbab7..8cfeb4ee3 100644
+--- a/src/libstore/meson.build
++++ b/src/libstore/meson.build
+@@ -363,6 +363,7 @@ this_library = library(
+   generated_headers,
+   sources,
+   config_priv_h,
++  soversion : meson.project_version(),
+   dependencies : deps_public + deps_private + deps_other,
+   include_directories : include_dirs,
+   link_args : linker_export_flags,
+diff --git a/src/libutil-c/meson.build b/src/libutil-c/meson.build
+index 8131c517c..e79d95a87 100644
+--- a/src/libutil-c/meson.build
++++ b/src/libutil-c/meson.build
+@@ -53,6 +53,7 @@ this_library = library(
+   'nixutilc',
+   sources,
+   config_priv_h,
++  soversion : meson.project_version(),
+   dependencies : deps_public + deps_private + deps_other,
+   include_directories : include_dirs,
+   link_args : linker_export_flags,
+diff --git a/src/libutil-test-support/meson.build b/src/libutil-test-support/meson.build
+index 910f1d881..5a6bd3733 100644
+--- a/src/libutil-test-support/meson.build
++++ b/src/libutil-test-support/meson.build
+@@ -41,6 +41,7 @@ subdir('nix-meson-build-support/windows-version')
+ this_library = library(
+   'nix-util-test-support',
+   sources,
++  soversion : meson.project_version(),
+   dependencies : deps_public + deps_private + deps_other,
+   include_directories : include_dirs,
+   # TODO: Remove `-lrapidcheck` when https://github.com/emil-e/rapidcheck/pull/326
+diff --git a/src/libutil/meson.build b/src/libutil/meson.build
+index cdffc892a..af5d46b38 100644
+--- a/src/libutil/meson.build
++++ b/src/libutil/meson.build
+@@ -197,6 +197,7 @@ subdir('nix-meson-build-support/windows-version')
+ this_library = library(
+   'nixutil',
+   sources,
++  soversion : meson.project_version(),
+   dependencies : deps_public + deps_private + deps_other,
+   include_directories : include_dirs,
+   link_args : linker_export_flags,
+diff --git a/src/libcmd/meson.build b/src/libcmd/meson.build
+index 11870ed12..00630aceb 100644
+--- a/src/libcmd/meson.build
++++ b/src/libcmd/meson.build
+@@ -95,7 +95,7 @@ this_library = library(
+   'nixcmd',
+   sources,
+   config_priv_h,
+-  soversion : meson.project_version(),
++  soversion : meson.project_version().replace('pre',''),
+   dependencies : deps_public + deps_private + deps_other,
+   include_directories : include_dirs,
+   link_args : linker_export_flags,
+diff --git a/src/libexpr-c/meson.build b/src/libexpr-c/meson.build
+index 40b87fff9..0aa937034 100644
+--- a/src/libexpr-c/meson.build
++++ b/src/libexpr-c/meson.build
+@@ -50,7 +50,7 @@ subdir('nix-meson-build-support/windows-version')
+ this_library = library(
+   'nixexprc',
+   sources,
+-  soversion : meson.project_version(),
++  soversion : meson.project_version().replace('pre',''),
+   dependencies : deps_public + deps_private + deps_other,
+   include_directories : include_dirs,
+   link_args : linker_export_flags,
+diff --git a/src/libexpr-test-support/meson.build b/src/libexpr-test-support/meson.build
+index 735f85f6a..8339ee574 100644
+--- a/src/libexpr-test-support/meson.build
++++ b/src/libexpr-test-support/meson.build
+@@ -44,7 +44,7 @@ subdir('nix-meson-build-support/windows-version')
+ this_library = library(
+   'nix-expr-test-support',
+   sources,
+-  soversion : meson.project_version(),
++  soversion : meson.project_version().replace('pre',''),
+   dependencies : deps_public + deps_private + deps_other,
+   include_directories : include_dirs,
+   # TODO: Remove `-lrapidcheck` when https://github.com/emil-e/rapidcheck/pull/326
+diff --git a/src/libexpr/meson.build b/src/libexpr/meson.build
+index d1a2692cc..e6676fe9e 100644
+--- a/src/libexpr/meson.build
++++ b/src/libexpr/meson.build
+@@ -181,7 +181,7 @@ this_library = library(
+   parser_tab,
+   lexer_tab,
+   generated_headers,
+-  soversion : meson.project_version(),
++  soversion : meson.project_version().replace('pre',''),
+   dependencies : deps_public + deps_private + deps_other,
+   include_directories : include_dirs,
+   link_args : linker_export_flags,
+diff --git a/src/libfetchers-c/meson.build b/src/libfetchers-c/meson.build
+index 0840040ca..cd3c40c02 100644
+--- a/src/libfetchers-c/meson.build
++++ b/src/libfetchers-c/meson.build
+@@ -53,7 +53,7 @@ subdir('nix-meson-build-support/windows-version')
+ this_library = library(
+   'nixfetchersc',
+   sources,
+-  soversion : meson.project_version(),
++  soversion : meson.project_version().replace('pre',''),
+   dependencies : deps_public + deps_private + deps_other,
+   include_directories : include_dirs,
+   link_args : linker_export_flags,
+diff --git a/src/libfetchers/meson.build b/src/libfetchers/meson.build
+index 7e088914e..fbaf98445 100644
+--- a/src/libfetchers/meson.build
++++ b/src/libfetchers/meson.build
+@@ -61,7 +61,7 @@ subdir('nix-meson-build-support/windows-version')
+ this_library = library(
+   'nixfetchers',
+   sources,
+-  soversion : meson.project_version(),
++  soversion : meson.project_version().replace('pre',''),
+   dependencies : deps_public + deps_private + deps_other,
+   include_directories : include_dirs,
+   link_args : linker_export_flags,
+diff --git a/src/libflake-c/meson.build b/src/libflake-c/meson.build
+index cfe3eae3f..c4c812949 100644
+--- a/src/libflake-c/meson.build
++++ b/src/libflake-c/meson.build
+@@ -53,7 +53,7 @@ subdir('nix-meson-build-support/windows-version')
+ this_library = library(
+   'nixflakec',
+   sources,
+-  soversion : meson.project_version(),
++  soversion : meson.project_version().replace('pre',''),
+   dependencies : deps_public + deps_private + deps_other,
+   include_directories : include_dirs,
+   link_args : linker_export_flags,
+diff --git a/src/libflake/meson.build b/src/libflake/meson.build
+index 37a552ef8..736745f52 100644
+--- a/src/libflake/meson.build
++++ b/src/libflake/meson.build
+@@ -58,7 +58,7 @@ this_library = library(
+   'nixflake',
+   sources,
+   generated_headers,
+-  soversion : meson.project_version(),
++  soversion : meson.project_version().replace('pre',''),
+   dependencies : deps_public + deps_private + deps_other,
+   include_directories : include_dirs,
+   link_args : linker_export_flags,
+diff --git a/src/libmain-c/meson.build b/src/libmain-c/meson.build
+index b37ac6950..34fc969c9 100644
+--- a/src/libmain-c/meson.build
++++ b/src/libmain-c/meson.build
+@@ -45,7 +45,7 @@ subdir('nix-meson-build-support/windows-version')
+ this_library = library(
+   'nixmainc',
+   sources,
+-  soversion : meson.project_version(),
++  soversion : meson.project_version().replace('pre',''),
+   dependencies : deps_public + deps_private + deps_other,
+   include_directories : include_dirs,
+   link_args : linker_export_flags,
+diff --git a/src/libmain/meson.build b/src/libmain/meson.build
+index aa2981548..bd0db2225 100644
+--- a/src/libmain/meson.build
++++ b/src/libmain/meson.build
+@@ -77,7 +77,7 @@ this_library = library(
+   'nixmain',
+   sources,
+   config_priv_h,
+-  soversion : meson.project_version(),
++  soversion : meson.project_version().replace('pre',''),
+   dependencies : deps_public + deps_private + deps_other,
+   include_directories : include_dirs,
+   link_args : linker_export_flags,
+diff --git a/src/libstore-c/meson.build b/src/libstore-c/meson.build
+index 7266c6046..53266ea6e 100644
+--- a/src/libstore-c/meson.build
++++ b/src/libstore-c/meson.build
+@@ -46,7 +46,7 @@ subdir('nix-meson-build-support/windows-version')
+ this_library = library(
+   'nixstorec',
+   sources,
+-  soversion : meson.project_version(),
++  soversion : meson.project_version().replace('pre',''),
+   dependencies : deps_public + deps_private + deps_other,
+   include_directories : include_dirs,
+   link_args : linker_export_flags,
+diff --git a/src/libstore-test-support/meson.build b/src/libstore-test-support/meson.build
+index 523c46ed9..b77a23068 100644
+--- a/src/libstore-test-support/meson.build
++++ b/src/libstore-test-support/meson.build
+@@ -44,7 +44,7 @@ subdir('nix-meson-build-support/windows-version')
+ this_library = library(
+   'nix-store-test-support',
+   sources,
+-  soversion : meson.project_version(),
++  soversion : meson.project_version().replace('pre',''),
+   dependencies : deps_public + deps_private + deps_other,
+   include_directories : include_dirs,
+   # TODO: Remove `-lrapidcheck` when https://github.com/emil-e/rapidcheck/pull/326
+diff --git a/src/libstore/meson.build b/src/libstore/meson.build
+index 8cfeb4ee3..dc67ed233 100644
+--- a/src/libstore/meson.build
++++ b/src/libstore/meson.build
+@@ -363,7 +363,7 @@ this_library = library(
+   generated_headers,
+   sources,
+   config_priv_h,
+-  soversion : meson.project_version(),
++  soversion : meson.project_version().replace('pre',''),
+   dependencies : deps_public + deps_private + deps_other,
+   include_directories : include_dirs,
+   link_args : linker_export_flags,
+diff --git a/src/libutil-c/meson.build b/src/libutil-c/meson.build
+index e79d95a87..6a3ec1663 100644
+--- a/src/libutil-c/meson.build
++++ b/src/libutil-c/meson.build
+@@ -53,7 +53,7 @@ this_library = library(
+   'nixutilc',
+   sources,
+   config_priv_h,
+-  soversion : meson.project_version(),
++  soversion : meson.project_version().replace('pre',''),
+   dependencies : deps_public + deps_private + deps_other,
+   include_directories : include_dirs,
+   link_args : linker_export_flags,
+diff --git a/src/libutil-test-support/meson.build b/src/libutil-test-support/meson.build
+index 5a6bd3733..44a1e69e7 100644
+--- a/src/libutil-test-support/meson.build
++++ b/src/libutil-test-support/meson.build
+@@ -41,7 +41,7 @@ subdir('nix-meson-build-support/windows-version')
+ this_library = library(
+   'nix-util-test-support',
+   sources,
+-  soversion : meson.project_version(),
++  soversion : meson.project_version().replace('pre',''),
+   dependencies : deps_public + deps_private + deps_other,
+   include_directories : include_dirs,
+   # TODO: Remove `-lrapidcheck` when https://github.com/emil-e/rapidcheck/pull/326
+diff --git a/src/libutil/meson.build b/src/libutil/meson.build
+index af5d46b38..d3822317b 100644
+--- a/src/libutil/meson.build
++++ b/src/libutil/meson.build
+@@ -197,7 +197,7 @@ subdir('nix-meson-build-support/windows-version')
+ this_library = library(
+   'nixutil',
+   sources,
+-  soversion : meson.project_version(),
++  soversion : meson.project_version().replace('pre',''),
+   dependencies : deps_public + deps_private + deps_other,
+   include_directories : include_dirs,
+   link_args : linker_export_flags,
