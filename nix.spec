@@ -16,10 +16,12 @@ Source1:        nix.conf
 Source2:        registry.json
 Source3:        README.md
 # soversion patches:
-# https://github.com/NixOS/nix/pull/13995 (merged)
+# https://github.com/NixOS/nix/pull/13995
 Patch0:         https://patch-diff.githubusercontent.com/raw/NixOS/nix/pull/13995.patch
 # https://github.com/NixOS/nix/pull/14001
 Patch1:         https://patch-diff.githubusercontent.com/raw/NixOS/nix/pull/14001.patch
+# https://github.com/NixOS/nix/pull/14005
+Patch2:         https://patch-diff.githubusercontent.com/raw/NixOS/nix/pull/14005.patch
 
 # https://nixos.org/manual/nix/unstable/installation/prerequisites-source
 # missing aws-cpp-sdk-s3 aws-c-auth aws-c-s3
@@ -239,7 +241,7 @@ LD_LIBRARY_PATH=%{buildroot}%{_libdir} %{buildroot}%{_bindir}/nix --help
 
 %changelog
 * Mon Sep 15 2025 Jens Petersen <petersen@redhat.com> - 2.31.1-5
-- set the soversion to the nix version (#13995, #14001)
+- set the soversion to the nix version (#13995, #14001, #14005)
 
 * Sun Sep 14 2025 Jens Petersen <petersen@redhat.com> - 2.31.1-4
 - add simple check with LD_LIBRARY_PATH

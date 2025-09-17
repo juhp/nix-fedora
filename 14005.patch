@@ -1,0 +1,23 @@
+From ca23c819e0492272a695f3f87467a05c152ac77d Mon Sep 17 00:00:00 2001
+From: Jens Petersen <petersen@redhat.com>
+Date: Tue, 16 Sep 2025 18:31:40 +0800
+Subject: [PATCH] nix-meson-build-support/common nix_soversion: fixup removal
+ of 'pre'
+
+.strip() removes individual chars whereas .replace() affects whole substring
+
+Thanks @keszybz
+---
+ nix-meson-build-support/common/meson.build | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/nix-meson-build-support/common/meson.build b/nix-meson-build-support/common/meson.build
+index 5a29ff61d94..a46715193c6 100644
+--- a/nix-meson-build-support/common/meson.build
++++ b/nix-meson-build-support/common/meson.build
+@@ -42,4 +42,4 @@ if cxx.get_id() == 'clang' and ('address' in get_option('b_sanitize') or 'undefi
+ endif
+ 
+ # Darwin ld doesn't like "X.Y.Zpre"
+-nix_soversion = meson.project_version().strip('pre')
++nix_soversion = meson.project_version().replace('pre', '')
