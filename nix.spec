@@ -170,6 +170,10 @@ MESON_OPTS=(
 mkdir -p %{buildroot}/etc/nix
 cp %{SOURCE1} %{SOURCE2} %{buildroot}/etc/nix/
 
+# https://pagure.io/fesco/issue/3473
+# this creates files under /nix so disable for now
+mv %{buildroot}%{_prefix}/lib/tmpfiles.d/nix-daemon.conf{,.example}
+
 
 %check
 LD_LIBRARY_PATH=%{buildroot}%{_libdir} %{buildroot}%{_bindir}/nix --help
@@ -212,7 +216,7 @@ LD_LIBRARY_PATH=%{buildroot}%{_libdir} %{buildroot}%{_bindir}/nix --help
 %{_bindir}/nix-daemon
 %{_sysconfdir}/profile.d/nix-daemon.*sh
 %{_prefix}/lib/systemd/system/nix-daemon.*
-%{_prefix}/lib/tmpfiles.d/nix-daemon.conf
+%{_prefix}/lib/tmpfiles.d/nix-daemon.conf.example
 
 
 %files devel
@@ -266,6 +270,7 @@ LD_LIBRARY_PATH=%{buildroot}%{_libdir} %{buildroot}%{_bindir}/nix --help
 %changelog
 * Wed Sep 17 2025 Jens Petersen <petersen@redhat.com> - 2.31.1-6
 - list .so files explicitly without globbing (#2388768)
+- disable /usr/lib/tmpfiles.d/nix-daemon.conf for now (#2388768)
 
 * Mon Sep 15 2025 Jens Petersen <petersen@redhat.com> - 2.31.1-5
 - set the soversion to the nix version (#13995, #14001, #14005)
