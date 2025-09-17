@@ -6,7 +6,7 @@
 
 Name:           nix
 Version:        2.31.1
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        A purely functional package manager
 
 License:        LGPL-2.1-or-later
@@ -219,7 +219,19 @@ LD_LIBRARY_PATH=%{buildroot}%{_libdir} %{buildroot}%{_bindir}/nix --help
 %{_includedir}/nix
 %{_includedir}/nix_api_*.h
 %{_includedir}/nix_api_*.hh
-%{_libdir}/libnix*.so
+%{_libdir}/libnixcmd.so
+%{_libdir}/libnixexpr.so
+%{_libdir}/libnixexprc.so
+%{_libdir}/libnixfetchers.so
+%{_libdir}/libnixfetchersc.so
+%{_libdir}/libnixflake.so
+%{_libdir}/libnixflakec.so
+%{_libdir}/libnixmain.so
+%{_libdir}/libnixmainc.so
+%{_libdir}/libnixstore.so
+%{_libdir}/libnixstorec.so
+%{_libdir}/libnixutil.so
+%{_libdir}/libnixutilc.so
 %{_libdir}/pkgconfig/*.pc
 
 
@@ -231,7 +243,19 @@ LD_LIBRARY_PATH=%{buildroot}%{_libdir} %{buildroot}%{_bindir}/nix --help
 
 %files libs
 %license COPYING
-%{_libdir}/libnix*.so.*
+%{_libdir}/libnixcmd.so.%{version}
+%{_libdir}/libnixexpr.so.%{version}
+%{_libdir}/libnixexprc.so.%{version}
+%{_libdir}/libnixfetchers.so.%{version}
+%{_libdir}/libnixfetchersc.so.%{version}
+%{_libdir}/libnixflake.so.%{version}
+%{_libdir}/libnixflakec.so.%{version}
+%{_libdir}/libnixmain.so.%{version}
+%{_libdir}/libnixmainc.so.%{version}
+%{_libdir}/libnixstore.so.%{version}
+%{_libdir}/libnixstorec.so.%{version}
+%{_libdir}/libnixutil.so.%{version}
+%{_libdir}/libnixutilc.so.%{version}
 
 %if %{with tests}
 %files test
@@ -240,6 +264,9 @@ LD_LIBRARY_PATH=%{buildroot}%{_libdir} %{buildroot}%{_bindir}/nix --help
 
 
 %changelog
+* Wed Sep 17 2025 Jens Petersen <petersen@redhat.com> - 2.31.1-6
+- list .so files explicitly without globbing (#2388768)
+
 * Mon Sep 15 2025 Jens Petersen <petersen@redhat.com> - 2.31.1-5
 - set the soversion to the nix version (#13995, #14001, #14005)
 
