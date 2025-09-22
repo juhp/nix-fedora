@@ -5,8 +5,8 @@
 %bcond tests 0
 
 Name:           nix
-Version:        2.31.1
-Release:        6%{?dist}
+Version:        2.31.2
+Release:        1%{?dist}
 Summary:        A purely functional package manager
 
 License:        LGPL-2.1-or-later
@@ -268,6 +268,9 @@ LD_LIBRARY_PATH=%{buildroot}%{_libdir} %{buildroot}%{_bindir}/nix --help
 
 
 %changelog
+* Mon Sep 22 2025 Jens Petersen <petersen@redhat.com> - 2.31.2-1
+- update to 2.31.2
+
 * Wed Sep 17 2025 Jens Petersen <petersen@redhat.com> - 2.31.1-6
 - list .so files explicitly without globbing (#2388768)
 - disable /usr/lib/tmpfiles.d/nix-daemon.conf for now (#2388768)
