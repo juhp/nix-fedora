@@ -1,0 +1,24 @@
+From 7dbfe9f5761662efdd7de8c00d940749af276240 Mon Sep 17 00:00:00 2001
+From: Sergei Zimmerman <sergei@zimmerman.foo>
+Date: Thu, 18 Sep 2025 23:34:27 +0300
+Subject: [PATCH] meson: Fix SONAME for unstable versions
+
+Replacing the string is not enough [^] for e.g. nixpkgs precise versions:
+
+`2.31pre20250712_b1245123`
+
+[^]: https://github.com/NixOS/nixpkgs/pull/444089
+---
+ nix-meson-build-support/common/meson.build | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/nix-meson-build-support/common/meson.build b/nix-meson-build-support/common/meson.build
+index a46715193c6..f08fb3d8439 100644
+--- a/nix-meson-build-support/common/meson.build
++++ b/nix-meson-build-support/common/meson.build
+@@ -42,4 +42,4 @@ if cxx.get_id() == 'clang' and ('address' in get_option('b_sanitize') or 'undefi
+ endif
+ 
+ # Darwin ld doesn't like "X.Y.Zpre"
+-nix_soversion = meson.project_version().replace('pre', '')
++nix_soversion = meson.project_version().split('pre')[0]

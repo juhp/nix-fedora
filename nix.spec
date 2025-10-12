@@ -22,6 +22,8 @@ Patch0:         https://patch-diff.githubusercontent.com/raw/NixOS/nix/pull/1399
 Patch1:         https://patch-diff.githubusercontent.com/raw/NixOS/nix/pull/14001.patch
 # https://github.com/NixOS/nix/pull/14005
 Patch2:         https://patch-diff.githubusercontent.com/raw/NixOS/nix/pull/14005.patch
+# https://github.com/NixOS/nix/pull/14018
+Patch3:         https://patch-diff.githubusercontent.com/raw/NixOS/nix/pull/14018.patch
 
 # https://nixos.org/manual/nix/unstable/installation/prerequisites-source
 # missing aws-cpp-sdk-s3 aws-c-auth aws-c-s3
