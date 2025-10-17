@@ -93,12 +93,15 @@ See the README.fedora.md file for setup instructions.
 
 
 %package daemon
-Summary:        The nix daemon
+Summary:        The nix daemon for multiuser mode
 BuildArch:      noarch
 Requires:       %{name} = %{version}-%{release}
+Requires:       %{name}-filesystem = %{version}-%{release}
 
 %description daemon
-This package provides nix-daemon and associated files.
+This package provides nix-daemon, associated files and multiuser setup.
+
+If you want single-user mode install the nix-singleuser package instead.
 
 
 %package devel
@@ -135,27 +138,16 @@ Summary:        Runtime libraries for %{name}
 The package provides the the runtime libraries for %{name}.
 
 
-%package        multiuser
-Summary:        Multi-user mode nix
-Requires:       %{name} >= %{version}-%{release}
-Requires:       %{name}-daemon >= %{version}-%{release}
-Requires:       %{name}-filesystem = %{version}-%{release}
-
-%description    multiuser
-This package sets up a multi-user mode nix.
-
-If you want single-user mode install the nix-singleuser package instead.
-
-
 %package        singleuser
 Summary:        Single user mode nix
-Requires:       %{name} >= %{version}-%{release}
+BuildArch:      noarch
+Requires:       %{name} = %{version}-%{release}
 Requires:       %{name}-filesystem = %{version}-%{release}
 
 %description    singleuser
 This package sets up a single-user mode nix.
 
-If you want multi-user mode install the nix-multiuser package instead.
+If you want multi-user mode install the nix-daemon package instead.
 
 
 %if %{with tests}
@@ -234,6 +226,12 @@ LD_LIBRARY_PATH=%{buildroot}%{_libdir} %{buildroot}%{_bindir}/nix --help
 %endif
 
 
+%if 0%{?fedora} < 42 || %{defined el9} || %{defined el10}
+%pre daemon
+%sysusers_create_compat %{SOURCE0}
+%endif
+
+
 %post daemon
 %systemd_post nix-daemon.service
 
@@ -244,12 +242,6 @@ LD_LIBRARY_PATH=%{buildroot}%{_libdir} %{buildroot}%{_bindir}/nix --help
 
 %postun daemon
 %systemd_postun_with_restart nix-daemon.service
-
-
-%if 0%{?fedora} < 42 || %{defined el9} || %{defined el10}
-%pre multiuser
-%sysusers_create_compat %{SOURCE0}
-%endif
 
 
 %post singleuser
@@ -283,6 +275,15 @@ fi
 %{_sysconfdir}/profile.d/nix-daemon.*sh
 %{_prefix}/lib/systemd/system/nix-daemon.*
 %{_prefix}/lib/tmpfiles.d/nix-daemon.conf
+%attr(1775,root,%{nixbld_group}) /nix/store
+%attr(1775,root,%{nixbld_group}) %dir /nix/var/log/nix/drvs
+%dir %attr(775,root,%{nixbld_group}) /nix/var/nix
+%ghost /nix/var/nix/daemon-socket/socket
+%attr(775,root,%{nixbld_group}) /nix/var/nix/profiles
+%attr(775,root,%{nixbld_group}) /nix/var/nix/temproots
+%attr(775,root,%{nixbld_group}) /nix/var/nix/db
+%attr(664,root,%{nixbld_group}) /nix/var/nix/gc.lock
+%{_sysusersdir}/nix-daemon.conf
 
 
 %files devel
@@ -336,18 +337,6 @@ fi
 %{_libdir}/libnixutilc.so.%{version}
 
 
-%files multiuser
-%attr(1775,root,%{nixbld_group}) /nix/store
-%attr(1775,root,%{nixbld_group}) %dir /nix/var/log/nix/drvs
-%dir %attr(775,root,%{nixbld_group}) /nix/var/nix
-%ghost /nix/var/nix/daemon-socket/socket
-%attr(775,root,%{nixbld_group}) /nix/var/nix/profiles
-%attr(775,root,%{nixbld_group}) /nix/var/nix/temproots
-%attr(775,root,%{nixbld_group}) /nix/var/nix/db
-%attr(664,root,%{nixbld_group}) /nix/var/nix/gc.lock
-%{_sysusersdir}/nix-daemon.conf
-
-
 %files singleuser
 
 
@@ -360,7 +349,8 @@ fi
 %changelog
 * Sat Oct 18 2025 Jens Petersen <petersen@redhat.com> - 2.31.2-2
 - FHS Exception for /nix was approved (https://pagure.io/fesco/issue/3473)
-- add multiuser and singleuser setup packages and with nix-filesystem
+- add multiuser setup to daemon subpackage
+- add singleuser and nix-filesystem subpackages
 
 * Mon Sep 22 2025 Jens Petersen <petersen@redhat.com> - 2.31.2-1
 - update to 2.31.2
