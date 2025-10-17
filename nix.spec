@@ -1,3 +1,5 @@
+%global nixbld_group nixbld
+
 # needs mdbook
 %bcond docs 0
 # test failures complain NIX_STORE undefined
@@ -6,7 +8,7 @@
 
 Name:           nix
 Version:        2.31.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A purely functional package manager
 
 License:        LGPL-2.1-or-later
@@ -15,6 +17,7 @@ Source0:        https://github.com/NixOS/nix/archive/%{version}/%{name}-%{versio
 Source1:        nix.conf
 Source2:        registry.json
 Source3:        README.md
+Source4:        nix.sysusers
 # soversion patches:
 # https://github.com/NixOS/nix/pull/13995
 Patch0:         https://patch-diff.githubusercontent.com/raw/NixOS/nix/pull/13995.patch
@@ -117,11 +120,42 @@ The %{name}-doc package contains documentation files for %{name}.
 %endif
 
 
+%package        filesystem
+Summary:        Filesystem files for %{name}
+BuildArch:      noarch
+
+%description    filesystem
+The package provides the /nix file structure for the nix package manager.
+
+
 %package libs
 Summary:        Runtime libraries for %{name}
 
 %description libs
 The package provides the the runtime libraries for %{name}.
+
+
+%package        multiuser
+Summary:        Multi-user mode nix
+Requires:       %{name} >= %{version}-%{release}
+Requires:       %{name}-daemon >= %{version}-%{release}
+Requires:       %{name}-filesystem = %{version}-%{release}
+
+%description    multiuser
+This package sets up a multi-user mode nix.
+
+If you want single-user mode install the nix-singleuser package instead.
+
+
+%package        singleuser
+Summary:        Single user mode nix
+Requires:       %{name} >= %{version}-%{release}
+Requires:       %{name}-filesystem = %{version}-%{release}
+
+%description    singleuser
+This package sets up a single-user mode nix.
+
+If you want multi-user mode install the nix-multiuser package instead.
 
 
 %if %{with tests}
@@ -172,9 +206,24 @@ MESON_OPTS=(
 mkdir -p %{buildroot}/etc/nix
 cp %{SOURCE1} %{SOURCE2} %{buildroot}/etc/nix/
 
-# https://pagure.io/fesco/issue/3473
-# this creates files under /nix so disable for now
-mv %{buildroot}%{_prefix}/lib/tmpfiles.d/nix-daemon.conf{,.example}
+
+# Nix has multiuser and singleuser installation modes
+# https://nix.dev/manual/nix/stable/installation/nix-security.html
+
+mkdir -p %{buildroot}/nix/store
+mkdir -p %{buildroot}/nix/var/log/nix/drvs
+# make per-user directories
+for d in profiles gcroots;
+do
+  mkdir -p %{buildroot}/nix/var/nix/$d/per-user
+  chmod 1777 %{buildroot}/nix/var/nix/$d/per-user
+done
+for i in db temproots ; do
+  mkdir %{buildroot}/nix/var/nix/$i
+done
+touch %{buildroot}/nix/var/nix/gc.lock
+
+install -p -D -m 0644 %{SOURCE4} %{buildroot}%{_sysusersdir}/nix-daemon.conf
 
 
 %check
@@ -195,6 +244,21 @@ LD_LIBRARY_PATH=%{buildroot}%{_libdir} %{buildroot}%{_bindir}/nix --help
 
 %postun daemon
 %systemd_postun_with_restart nix-daemon.service
+
+
+%if 0%{?fedora} < 42 || %{defined el9} || %{defined el10}
+%pre multiuser
+%sysusers_create_compat %{SOURCE0}
+%endif
+
+
+%post singleuser
+if [ "$1" = 1 ]; then
+mkdir -p /nix/store
+mkdir -p /nix/var/log/nix/drvs
+mkdir -p /nix/var/nix/temproots
+mkdir -p /nix/var/nix/db
+fi
 
 
 %files
@@ -218,7 +282,7 @@ LD_LIBRARY_PATH=%{buildroot}%{_libdir} %{buildroot}%{_bindir}/nix --help
 %{_bindir}/nix-daemon
 %{_sysconfdir}/profile.d/nix-daemon.*sh
 %{_prefix}/lib/systemd/system/nix-daemon.*
-%{_prefix}/lib/tmpfiles.d/nix-daemon.conf.example
+%{_prefix}/lib/tmpfiles.d/nix-daemon.conf
 
 
 %files devel
@@ -247,6 +311,14 @@ LD_LIBRARY_PATH=%{buildroot}%{_libdir} %{buildroot}%{_bindir}/nix --help
 %endif
 
 
+%files filesystem
+# FHS Exception: https://pagure.io/fesco/issue/3473
+%dir /nix
+%dir /nix/var
+%dir /nix/var/log
+%dir /nix/var/log/nix
+
+
 %files libs
 %license COPYING
 %{_libdir}/libnixcmd.so.%{version}
@@ -263,6 +335,22 @@ LD_LIBRARY_PATH=%{buildroot}%{_libdir} %{buildroot}%{_bindir}/nix --help
 %{_libdir}/libnixutil.so.%{version}
 %{_libdir}/libnixutilc.so.%{version}
 
+
+%files multiuser
+%attr(1775,root,%{nixbld_group}) /nix/store
+%attr(1775,root,%{nixbld_group}) %dir /nix/var/log/nix/drvs
+%dir %attr(775,root,%{nixbld_group}) /nix/var/nix
+%ghost /nix/var/nix/daemon-socket/socket
+%attr(775,root,%{nixbld_group}) /nix/var/nix/profiles
+%attr(775,root,%{nixbld_group}) /nix/var/nix/temproots
+%attr(775,root,%{nixbld_group}) /nix/var/nix/db
+%attr(664,root,%{nixbld_group}) /nix/var/nix/gc.lock
+%{_sysusersdir}/nix-daemon.conf
+
+
+%files singleuser
+
+
 %if %{with tests}
 %files test
 %{_bindir}/nix*-test
@@ -270,6 +358,10 @@ LD_LIBRARY_PATH=%{buildroot}%{_libdir} %{buildroot}%{_bindir}/nix --help
 
 
 %changelog
+* Sat Oct 18 2025 Jens Petersen <petersen@redhat.com> - 2.31.2-2
+- FHS Exception for /nix was approved (https://pagure.io/fesco/issue/3473)
+- add multiuser and singleuser setup packages and with nix-filesystem
+
 * Mon Sep 22 2025 Jens Petersen <petersen@redhat.com> - 2.31.2-1
 - update to 2.31.2
 
