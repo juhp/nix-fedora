@@ -97,6 +97,7 @@ Summary:        The nix daemon for multiuser mode
 BuildArch:      noarch
 Requires:       %{name} = %{version}-%{release}
 Requires:       %{name}-filesystem = %{version}-%{release}
+Conflicts:      nix-singleuser
 
 %description daemon
 This package provides nix-daemon, associated files and multiuser setup.
@@ -143,6 +144,7 @@ Summary:        Single user mode nix
 BuildArch:      noarch
 Requires:       %{name} = %{version}-%{release}
 Requires:       %{name}-filesystem = %{version}-%{release}
+Conflicts:      nix-daemon
 
 %description    singleuser
 This package sets up a single-user mode nix.
@@ -349,6 +351,7 @@ fi
 %changelog
 * Tue Oct 21 2025 Jens Petersen <petersen@redhat.com> - 2.31.2-3
 - improve the readme
+- add conflicts between nix-daemon and nix-singleuser
 
 * Sat Oct 18 2025 Jens Petersen <petersen@redhat.com> - 2.31.2-2
 - FHS Exception for /nix was approved (https://pagure.io/fesco/issue/3473)
