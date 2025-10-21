@@ -6,34 +6,39 @@ Nix has two different installation modes:
 
 This is recommended by upstream and more seamless.
 
-Just install the `nix-multiuser` package and run:
+Just install the `nix` or `nix-daemon` package
+(the latter is recommended by the `nix` package) and run:
 ```
 $ sudo systemctl enable --now nix-daemon
 ```
-and
+or
 ```
-$ sudo usermod -a -G nixbld $USER
+$ sudo systemctl start nix-daemon
 ```
-for the user.
 
 ## Single-user mode
 
-Works in rootless containers like toolbox.
+This mode works in rootless containers like toolbox.
 
-Install the `nix-singleuser` package
-and then to complete single-user setup run:
+Run:
 ```
+$ sudo dnf install nix-singleuser
 $ sudo chown -R $USER /nix/*
 ```
 
-Alternatively you can try this hack to 'store' under home:
+Alternatively you can try this hack to have the nix store within your homedir:
 ```
+$ sudo dnf install nix --exclude nix-daemon
 $ sudo mkdir /nix
 $ sudo ln -s ~/.local/share/nix/root/nix/store /nix/
 ```
+(the symlink is needed for interactive bash - otherwise one gets: eg
+`error: executing shell '/nix/store/2j7r5np0vaz4cnqkymp1mqivmjj1x9xl-bash-interactive-5.3p3/bin/bash': No such file or directory`)
 
 # Testing
 
 A simple way to check nix is working is to run e.g. `nix-shell -p hello`.
 After a short while of downloading, this should put you in
 a nix shell subprocess where you should be able to run `hello`.
+
+Run `nix help` to learn more about the nix CLI or visit <https://nix.dev/>.

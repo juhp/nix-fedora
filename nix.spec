@@ -8,7 +8,7 @@
 
 Name:           nix
 Version:        2.31.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        A purely functional package manager
 
 License:        LGPL-2.1-or-later
@@ -347,6 +347,9 @@ fi
 
 
 %changelog
+* Tue Oct 21 2025 Jens Petersen <petersen@redhat.com> - 2.31.2-3
+- improve the readme
+
 * Sat Oct 18 2025 Jens Petersen <petersen@redhat.com> - 2.31.2-2
 - FHS Exception for /nix was approved (https://pagure.io/fesco/issue/3473)
 - add multiuser setup to daemon subpackage
