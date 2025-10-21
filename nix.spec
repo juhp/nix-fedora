@@ -257,7 +257,17 @@ fi
 
 %files
 %doc README.md README.fedora.md
-%{_bindir}/nix*
+%{_bindir}/nix
+%{_bindir}/nix-build
+%{_bindir}/nix-channel
+%{_bindir}/nix-collect-garbage
+%{_bindir}/nix-copy-closure
+%{_bindir}/nix-env
+%{_bindir}/nix-hash
+%{_bindir}/nix-instantiate
+%{_bindir}/nix-prefetch-url
+%{_bindir}/nix-shell
+%{_bindir}/nix-store
 %if %{with tests}
 %exclude %{_bindir}/nix*-test
 %endif
@@ -351,6 +361,7 @@ fi
 %changelog
 * Tue Oct 21 2025 Jens Petersen <petersen@redhat.com> - 2.31.2-3
 - improve the readme
+- list bin files explicitly
 - add conflicts between nix-daemon and nix-singleuser
 
 * Sat Oct 18 2025 Jens Petersen <petersen@redhat.com> - 2.31.2-2
