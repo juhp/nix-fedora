@@ -100,6 +100,7 @@ See the README.fedora.md file for setup instructions.
 Summary:        The nix daemon for multiuser mode
 BuildArch:      noarch
 Requires:       %{name} = %{version}-%{release}
+Conflicts:      nix-singleuser
 Conflicts:      fedora-release-container
 Conflicts:      fedora-release-coreos
 Conflicts:      fedora-release-ostree-desktop
@@ -141,6 +142,7 @@ The package provides the the runtime libraries for %{name}.
 Summary:        Single user mode nix
 BuildArch:      noarch
 Requires:       %{name} = %{version}-%{release}
+Conflicts:      nix-daemon
 
 %description    singleuser
 This package sets up a single-user mode nix.
@@ -361,6 +363,7 @@ fi
 %changelog
 * Fri Oct 24 2025 Jens Petersen <petersen@redhat.com> - 2.31.2-4
 - drop filesystem subpackage and ghost singleuser dirs
+- nix-daemon and nix-singleuser conflict with eachother
 
 * Thu Oct 23 2025 Jens Petersen <petersen@redhat.com> - 2.31.2-3
 - use tmpfiles.d for nix-filesystem
