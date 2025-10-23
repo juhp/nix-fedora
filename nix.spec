@@ -76,7 +76,7 @@ BuildRequires:  systemd-rpm-macros
 BuildRequires:  toml11-devel
 BuildRequires:  xz-devel
 Requires:       nix-libs%{?_isa} = %{version}-%{release}
-Recommends:     (nix-daemon = %{version}-%{release} without (fedora-release-container or fedora-release-coreos or fedora-release-ostree-desktop or fedora-release-toolbx))
+Recommends:     nix-daemon = %{version}-%{release}
 Recommends:     (nix-singleuser = %{version}-%{release} if (fedora-release-container or fedora-release-toolbx))
 %ifarch x86_64 aarch64 ppc64le
 Recommends:     busybox
@@ -98,6 +98,10 @@ Summary:        The nix daemon for multiuser mode
 BuildArch:      noarch
 Requires:       %{name} = %{version}-%{release}
 Requires:       %{name}-filesystem = %{version}-%{release}
+Conflicts:      fedora-release-container
+Conflicts:      fedora-release-coreos
+Conflicts:      fedora-release-ostree-desktop
+Conflicts:      fedora-release-toolbx
 
 %description daemon
 This package provides nix-daemon, associated files and multiuser setup.
@@ -358,7 +362,8 @@ LD_LIBRARY_PATH=%{buildroot}%{_libdir} %{buildroot}%{_bindir}/nix --help
 - improve the readme
 - list bin files explicitly
 - nix-singleuser now owns its dirs
-- use rich deps for weak deps
+- add nix-daemon conflicts for ostree and containers
+- add nix-singleuser recommends for containers
 
 * Sat Oct 18 2025 Jens Petersen <petersen@redhat.com> - 2.31.2-2
 - FHS Exception for /nix was approved (https://pagure.io/fesco/issue/3473)
