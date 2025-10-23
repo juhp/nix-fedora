@@ -233,10 +233,8 @@ LD_LIBRARY_PATH=%{buildroot}%{_libdir} %{buildroot}%{_bindir}/nix --help
 %endif
 
 
-%if 0%{?fedora} < 42 || %{defined el9} || %{defined el10}
 %pre daemon
-%sysusers_create_compat %{SOURCE0}
-%endif
+%sysusers_create_package nix-daemon %SOURCE4
 
 
 %post daemon
@@ -249,6 +247,10 @@ LD_LIBRARY_PATH=%{buildroot}%{_libdir} %{buildroot}%{_bindir}/nix --help
 
 %postun daemon
 %systemd_postun_with_restart nix-daemon.service
+
+
+%pre filesystem
+%tmpfiles_create_package nix-filesystem %SOURCE5
 
 
 %files
@@ -286,11 +288,12 @@ LD_LIBRARY_PATH=%{buildroot}%{_libdir} %{buildroot}%{_bindir}/nix --help
 %attr(1775,root,%{nixbld_group}) /nix/store
 %attr(1775,root,%{nixbld_group}) %dir /nix/var/log/nix/drvs
 %dir %attr(775,root,%{nixbld_group}) /nix/var/nix
-%ghost /nix/var/nix/daemon-socket/socket
+%ghost %dir /nix/var/nix/builds
+%ghost %dir /nix/var/nix/daemon-socket
 %attr(775,root,%{nixbld_group}) /nix/var/nix/profiles
 %attr(775,root,%{nixbld_group}) /nix/var/nix/temproots
 %attr(775,root,%{nixbld_group}) /nix/var/nix/db
-%attr(664,root,%{nixbld_group}) /nix/var/nix/gc.lock
+%ghost %attr(664,root,%{nixbld_group}) /nix/var/nix/gc.lock
 %{_sysusersdir}/nix-daemon.conf
 
 
@@ -323,6 +326,9 @@ LD_LIBRARY_PATH=%{buildroot}%{_libdir} %{buildroot}%{_bindir}/nix --help
 %files filesystem
 # FHS Exception: https://pagure.io/fesco/issue/3473
 %{_tmpfilesdir}/nix-filesystem.conf
+%ghost %dir /nix/var
+%ghost %dir /nix/var/log
+%ghost %dir /nix/var/log/nix
 
 
 %files libs
