@@ -97,7 +97,6 @@ Summary:        The nix daemon for multiuser mode
 BuildArch:      noarch
 Requires:       %{name} = %{version}-%{release}
 Requires:       %{name}-filesystem = %{version}-%{release}
-Conflicts:      nix-singleuser
 
 %description daemon
 This package provides nix-daemon, associated files and multiuser setup.
@@ -144,7 +143,6 @@ Summary:        Single user mode nix
 BuildArch:      noarch
 Requires:       %{name} = %{version}-%{release}
 Requires:       %{name}-filesystem = %{version}-%{release}
-Conflicts:      nix-daemon
 
 %description    singleuser
 This package sets up a single-user mode nix.
@@ -246,15 +244,6 @@ LD_LIBRARY_PATH=%{buildroot}%{_libdir} %{buildroot}%{_bindir}/nix --help
 %systemd_postun_with_restart nix-daemon.service
 
 
-%post singleuser
-if [ "$1" = 1 ]; then
-mkdir -p /nix/store
-mkdir -p /nix/var/log/nix/drvs
-mkdir -p /nix/var/nix/temproots
-mkdir -p /nix/var/nix/db
-fi
-
-
 %files
 %doc README.md README.fedora.md
 %{_bindir}/nix
@@ -350,6 +339,11 @@ fi
 
 
 %files singleuser
+%dir /nix/store
+%dir /nix/var/log/nix/drvs
+%dir /nix/var/nix
+%dir /nix/var/nix/temproots
+%dir /nix/var/nix/db
 
 
 %if %{with tests}
@@ -362,7 +356,7 @@ fi
 * Tue Oct 21 2025 Jens Petersen <petersen@redhat.com> - 2.31.2-3
 - improve the readme
 - list bin files explicitly
-- add conflicts between nix-daemon and nix-singleuser
+- nix-singleuser now owns its dirs
 
 * Sat Oct 18 2025 Jens Petersen <petersen@redhat.com> - 2.31.2-2
 - FHS Exception for /nix was approved (https://pagure.io/fesco/issue/3473)
