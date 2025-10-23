@@ -18,6 +18,7 @@ Source1:        nix.conf
 Source2:        registry.json
 Source3:        README.md
 Source4:        nix.sysusers
+Source5:        nix-filesystem.conf
 # soversion patches:
 # https://github.com/NixOS/nix/pull/13995
 Patch0:         https://patch-diff.githubusercontent.com/raw/NixOS/nix/pull/13995.patch
@@ -221,6 +222,7 @@ done
 touch %{buildroot}/nix/var/nix/gc.lock
 
 install -p -D -m 0644 %{SOURCE4} %{buildroot}%{_sysusersdir}/nix-daemon.conf
+install -p -D -m 0644 %{SOURCE5} %{buildroot}%{_tmpfilesdir}/nix-filesystem.conf
 
 
 %check
@@ -280,7 +282,7 @@ LD_LIBRARY_PATH=%{buildroot}%{_libdir} %{buildroot}%{_bindir}/nix --help
 %{_bindir}/nix-daemon
 %{_sysconfdir}/profile.d/nix-daemon.*sh
 %{_prefix}/lib/systemd/system/nix-daemon.*
-%{_prefix}/lib/tmpfiles.d/nix-daemon.conf
+%{_tmpfilesdir}/nix-daemon.conf
 %attr(1775,root,%{nixbld_group}) /nix/store
 %attr(1775,root,%{nixbld_group}) %dir /nix/var/log/nix/drvs
 %dir %attr(775,root,%{nixbld_group}) /nix/var/nix
@@ -320,10 +322,7 @@ LD_LIBRARY_PATH=%{buildroot}%{_libdir} %{buildroot}%{_bindir}/nix --help
 
 %files filesystem
 # FHS Exception: https://pagure.io/fesco/issue/3473
-%dir /nix
-%dir /nix/var
-%dir /nix/var/log
-%dir /nix/var/log/nix
+%{_tmpfilesdir}/nix-filesystem.conf
 
 
 %files libs
@@ -358,7 +357,8 @@ LD_LIBRARY_PATH=%{buildroot}%{_libdir} %{buildroot}%{_bindir}/nix --help
 
 
 %changelog
-* Tue Oct 21 2025 Jens Petersen <petersen@redhat.com> - 2.31.2-3
+* Thu Oct 23 2025 Jens Petersen <petersen@redhat.com> - 2.31.2-3
+- use tmpfiles.d for nix-filesystem
 - improve the readme
 - list bin files explicitly
 - nix-singleuser now owns its dirs
