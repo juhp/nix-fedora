@@ -293,8 +293,8 @@ fi
 %attr(1775,root,%{nixbld_group}) /nix/store
 %attr(1775,root,%{nixbld_group}) %dir /nix/var/log/nix/drvs
 %dir %attr(775,root,%{nixbld_group}) /nix/var/nix
-%ghost %dir /nix/var/nix/builds
-%ghost %dir /nix/var/nix/daemon-socket
+%ghost %attr(0755,root,root) /nix/var/nix/builds
+%ghost %attr(0755,root,root) /nix/var/nix/daemon-socket
 %attr(775,root,%{nixbld_group}) /nix/var/nix/profiles
 %attr(775,root,%{nixbld_group}) /nix/var/nix/temproots
 %attr(775,root,%{nixbld_group}) /nix/var/nix/db
