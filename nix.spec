@@ -76,7 +76,8 @@ BuildRequires:  systemd-rpm-macros
 BuildRequires:  toml11-devel
 BuildRequires:  xz-devel
 Requires:       nix-libs%{?_isa} = %{version}-%{release}
-Recommends:     nix-daemon = %{version}-%{release}
+Recommends:     (nix-daemon = %{version}-%{release} without (fedora-release-container or fedora-release-coreos or fedora-release-ostree-desktop or fedora-release-toolbx))
+Recommends:     (nix-singleuser = %{version}-%{release} if (fedora-release-container or fedora-release-toolbx))
 %ifarch x86_64 aarch64 ppc64le
 Recommends:     busybox
 %endif
@@ -357,6 +358,7 @@ LD_LIBRARY_PATH=%{buildroot}%{_libdir} %{buildroot}%{_bindir}/nix --help
 - improve the readme
 - list bin files explicitly
 - nix-singleuser now owns its dirs
+- use rich deps for weak deps
 
 * Sat Oct 18 2025 Jens Petersen <petersen@redhat.com> - 2.31.2-2
 - FHS Exception for /nix was approved (https://pagure.io/fesco/issue/3473)
