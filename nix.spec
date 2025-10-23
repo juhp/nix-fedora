@@ -8,7 +8,7 @@
 
 Name:           nix
 Version:        2.31.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        A purely functional package manager
 
 License:        LGPL-2.1-or-later
@@ -98,7 +98,6 @@ See the README.fedora.md file for setup instructions.
 Summary:        The nix daemon for multiuser mode
 BuildArch:      noarch
 Requires:       %{name} = %{version}-%{release}
-Requires:       %{name}-filesystem = %{version}-%{release}
 Conflicts:      fedora-release-container
 Conflicts:      fedora-release-coreos
 Conflicts:      fedora-release-ostree-desktop
@@ -129,14 +128,6 @@ The %{name}-doc package contains documentation files for %{name}.
 %endif
 
 
-%package        filesystem
-Summary:        Filesystem files for %{name}
-BuildArch:      noarch
-
-%description    filesystem
-The package provides the /nix file structure for the nix package manager.
-
-
 %package libs
 Summary:        Runtime libraries for %{name}
 
@@ -148,7 +139,6 @@ The package provides the the runtime libraries for %{name}.
 Summary:        Single user mode nix
 BuildArch:      noarch
 Requires:       %{name} = %{version}-%{release}
-Requires:       %{name}-filesystem = %{version}-%{release}
 
 %description    singleuser
 This package sets up a single-user mode nix.
@@ -235,6 +225,7 @@ LD_LIBRARY_PATH=%{buildroot}%{_libdir} %{buildroot}%{_bindir}/nix --help
 
 %pre daemon
 %sysusers_create_package nix-daemon %SOURCE4
+%tmpfiles_create_package nix-daemon %SOURCE5
 
 
 %post daemon
@@ -249,8 +240,13 @@ LD_LIBRARY_PATH=%{buildroot}%{_libdir} %{buildroot}%{_bindir}/nix --help
 %systemd_postun_with_restart nix-daemon.service
 
 
-%pre filesystem
-%tmpfiles_create_package nix-filesystem %SOURCE5
+%post singleuser
+if [ "$1" = 1 ]; then
+mkdir -p /nix/store
+mkdir -p /nix/var/log/nix/drvs
+mkdir -p /nix/var/nix/temproots
+mkdir -p /nix/var/nix/db
+fi
 
 
 %files
@@ -285,6 +281,11 @@ LD_LIBRARY_PATH=%{buildroot}%{_libdir} %{buildroot}%{_bindir}/nix --help
 %{_sysconfdir}/profile.d/nix-daemon.*sh
 %{_prefix}/lib/systemd/system/nix-daemon.*
 %{_tmpfilesdir}/nix-daemon.conf
+# FHS Exception: https://pagure.io/fesco/issue/3473
+%{_tmpfilesdir}/nix-filesystem.conf
+%ghost %dir /nix/var
+%ghost %dir /nix/var/log
+%ghost %dir /nix/var/log/nix
 %attr(1775,root,%{nixbld_group}) /nix/store
 %attr(1775,root,%{nixbld_group}) %dir /nix/var/log/nix/drvs
 %dir %attr(775,root,%{nixbld_group}) /nix/var/nix
@@ -323,14 +324,6 @@ LD_LIBRARY_PATH=%{buildroot}%{_libdir} %{buildroot}%{_bindir}/nix --help
 %endif
 
 
-%files filesystem
-# FHS Exception: https://pagure.io/fesco/issue/3473
-%{_tmpfilesdir}/nix-filesystem.conf
-%ghost %dir /nix/var
-%ghost %dir /nix/var/log
-%ghost %dir /nix/var/log/nix
-
-
 %files libs
 %license COPYING
 %{_libdir}/libnixcmd.so.%{version}
@@ -349,11 +342,12 @@ LD_LIBRARY_PATH=%{buildroot}%{_libdir} %{buildroot}%{_bindir}/nix --help
 
 
 %files singleuser
-%dir /nix/store
-%dir /nix/var/log/nix/drvs
-%dir /nix/var/nix
-%dir /nix/var/nix/temproots
-%dir /nix/var/nix/db
+%ghost %dir /nix
+%ghost %dir /nix/store
+%ghost %dir /nix/var/log/nix/drvs
+%ghost %dir /nix/var/nix
+%ghost %dir /nix/var/nix/temproots
+%ghost %dir /nix/var/nix/db
 
 
 %if %{with tests}
@@ -363,6 +357,9 @@ LD_LIBRARY_PATH=%{buildroot}%{_libdir} %{buildroot}%{_bindir}/nix --help
 
 
 %changelog
+* Fri Oct 24 2025 Jens Petersen <petersen@redhat.com> - 2.31.2-4
+- drop filesystem subpackage and ghost singleuser dirs
+
 * Thu Oct 23 2025 Jens Petersen <petersen@redhat.com> - 2.31.2-3
 - use tmpfiles.d for nix-filesystem
 - improve the readme
