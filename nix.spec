@@ -1,12 +1,14 @@
 %global nixbld_group nixbld
 
-# needs mdbook
+# needs mdbook: https://bugzilla.redhat.com/show_bug.cgi?id=2332609
 %bcond docs 0
 # test failures complain NIX_STORE undefined
 # and missing rapidcheck
 %bcond tests 0
 
 Name:           nix
+# 2.32 needs boost >= 1.87 (https://bugzilla.redhat.com/show_bug.cgi?id=2406036)
+# (https://github.com/NixOS/nix/pull/14340)
 Version:        2.31.2
 Release:        4%{?dist}
 Summary:        A purely functional package manager
