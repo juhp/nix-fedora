@@ -28,12 +28,13 @@ $ sudo chown -R $USER /nix/*
 
 Alternatively you can try this hack to have the nix store within your homedir:
 ```
-$ sudo dnf install nix --exclude nix-daemon
+$ sudo dnf install nix --exclude nix-daemon --exclude nix-singleuser
 $ sudo mkdir /nix
 $ sudo ln -s ~/.local/share/nix/root/nix/store /nix/
 ```
 (the symlink is needed for interactive bash - otherwise one gets: eg
-`error: executing shell '/nix/store/2j7r5np0vaz4cnqkymp1mqivmjj1x9xl-bash-interactive-5.3p3/bin/bash': No such file or directory`)
+`error: executing shell '/nix/store/2j7r5np0vaz4cnqkymp1mqivmjj1x9xl-bash-interactive-5.3p3/bin/bash': No such file or directory`).
+Note this only works without `/nix/var/nix/`.
 
 # Testing
 

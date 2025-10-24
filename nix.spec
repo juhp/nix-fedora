@@ -363,7 +363,7 @@ fi
 %changelog
 * Fri Oct 24 2025 Jens Petersen <petersen@redhat.com> - 2.31.2-4
 - drop filesystem subpackage and ghost singleuser dirs
-- nix-daemon and nix-singleuser conflict with eachother
+- nix-daemon and nix-singleuser conflict with each other
 
 * Thu Oct 23 2025 Jens Petersen <petersen@redhat.com> - 2.31.2-3
 - use tmpfiles.d for nix-filesystem
