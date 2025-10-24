@@ -229,7 +229,7 @@ LD_LIBRARY_PATH=%{buildroot}%{_libdir} %{buildroot}%{_bindir}/nix --help
 
 %pre daemon
 %sysusers_create_package nix-daemon %SOURCE4
-%tmpfiles_create_package nix-daemon %SOURCE5
+%tmpfiles_create_package nix-filesystem %SOURCE5
 
 
 %post daemon
