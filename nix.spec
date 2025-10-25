@@ -245,7 +245,7 @@ LD_LIBRARY_PATH=%{buildroot}%{_libdir} %{buildroot}%{_bindir}/nix --help
 
 
 %files
-%doc README.md README.fedora.md
+%doc README.md README.fedora.md examples
 %{_bindir}/nix
 %{_bindir}/nix-build
 %{_bindir}/nix-channel
@@ -355,6 +355,7 @@ LD_LIBRARY_PATH=%{buildroot}%{_libdir} %{buildroot}%{_bindir}/nix --help
 %changelog
 * Sat Oct 25 2025 Jens Petersen <petersen@redhat.com> - 2.31.2-7
 - recommends nix-daemon if systemd
+- include some example *.nix files
 
 * Sat Oct 25 2025 Jens Petersen <petersen@redhat.com> - 2.31.2-6
 - rename users subpackage to system
