@@ -15,7 +15,7 @@ Summary:        A purely functional package manager
 
 License:        LGPL-2.1-or-later
 URL:            https://github.com/NixOS/nix
-Source0:        https://github.com/NixOS/nix/archive/%{version}/%{name}-%{version}.tar.gz
+Source0:        https://github.com/NixOS/nix/archive/%{version}/nix-%{version}.tar.gz
 Source1:        nix.conf
 Source2:        registry.json
 Source3:        README.md
@@ -78,9 +78,9 @@ BuildRequires:  sqlite-devel
 BuildRequires:  systemd-rpm-macros
 BuildRequires:  toml11-devel
 BuildRequires:  xz-devel
-Requires:       nix-libs%{?_isa} = %{version}-%{release}
-Recommends:     nix-daemon = %{version}-%{release}
-Recommends:     (nix-singleuser = %{version}-%{release} if (fedora-release-container or fedora-release-toolbx))
+Requires:       %{name}-libs%{?_isa} = %{version}-%{release}
+Recommends:     %{name}-daemon = %{version}-%{release}
+Recommends:     (%{name}-singleuser = %{version}-%{release} if (fedora-release-container or fedora-release-toolbx))
 %ifarch x86_64 aarch64 ppc64le
 Recommends:     busybox
 %endif
@@ -100,7 +100,7 @@ See the README.fedora.md file for setup instructions.
 Summary:        The nix daemon for multiuser mode
 BuildArch:      noarch
 Requires:       %{name} = %{version}-%{release}
-Conflicts:      nix-singleuser
+Conflicts:      %{name}-singleuser
 Conflicts:      fedora-release-container
 Conflicts:      fedora-release-coreos
 Conflicts:      fedora-release-ostree-desktop
@@ -142,7 +142,7 @@ The package provides the the runtime libraries for %{name}.
 Summary:        Single user mode nix
 BuildArch:      noarch
 Requires:       %{name} = %{version}-%{release}
-Conflicts:      nix-daemon
+Conflicts:      %{name}-daemon
 
 %description    singleuser
 This package sets up a single-user mode nix.
