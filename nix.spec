@@ -10,7 +10,7 @@ Name:           nix
 # 2.32 needs boost >= 1.87 (https://bugzilla.redhat.com/show_bug.cgi?id=2406036)
 # (https://github.com/NixOS/nix/pull/14340)
 Version:        2.31.2
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        A purely functional package manager
 
 License:        LGPL-2.1-or-later
@@ -79,7 +79,7 @@ BuildRequires:  systemd-rpm-macros
 BuildRequires:  toml11-devel
 BuildRequires:  xz-devel
 Requires:       %{name}-libs%{?_isa} = %{version}-%{release}
-Recommends:     %{name}-daemon = %{version}-%{release}
+Recommends:     (%{name}-daemon = %{version}-%{release} if systemd)
 Recommends:     %{name}-system = %{version}-%{release}
 %ifarch x86_64 aarch64 ppc64le
 Recommends:     busybox
@@ -353,6 +353,9 @@ LD_LIBRARY_PATH=%{buildroot}%{_libdir} %{buildroot}%{_bindir}/nix --help
 
 
 %changelog
+* Sat Oct 25 2025 Jens Petersen <petersen@redhat.com> - 2.31.2-7
+- recommends nix-daemon if systemd
+
 * Sat Oct 25 2025 Jens Petersen <petersen@redhat.com> - 2.31.2-6
 - rename users subpackage to system
 - improve /nix/var dirs ownership and perms
