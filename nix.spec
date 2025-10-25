@@ -220,6 +220,9 @@ LD_LIBRARY_PATH=%{buildroot}%{_libdir} %{buildroot}%{_bindir}/nix --help
 %meson_test
 %endif
 
+%pre daemon
+%tmpfiles_create_package nix-daemon %{_builddir}/%{name}-%{version}/redhat-linux-build/src/nix/misc/systemd/nix-daemon.conf
+
 
 %post daemon
 %systemd_post nix-daemon.service
@@ -272,7 +275,9 @@ LD_LIBRARY_PATH=%{buildroot}%{_libdir} %{buildroot}%{_bindir}/nix --help
 %{_bindir}/nix-daemon
 %{_sysconfdir}/profile.d/nix-daemon.*sh
 %{_unitdir}/nix-daemon.*
-%ghost %attr(0755,root,root) /nix/var/nix/daemon-socket
+%{_tmpfilesdir}/nix-daemon.conf
+%ghost /nix/var/nix/daemon-socket
+%ghost /nix/var/nix/builds
 
 
 %files devel
@@ -331,7 +336,6 @@ LD_LIBRARY_PATH=%{buildroot}%{_libdir} %{buildroot}%{_bindir}/nix --help
 
 
 %files system
-%{_tmpfilesdir}/nix-daemon.conf
 %{_sysusersdir}/nix.conf
 %attr(1775,root,%{nixbld_group}) /nix/store
 %ghost %dir /nix/var
@@ -354,6 +358,7 @@ LD_LIBRARY_PATH=%{buildroot}%{_libdir} %{buildroot}%{_bindir}/nix --help
 - rename users subpackage to system
 - own a few more /nix/var/nix/ dirs
 - rename sysusers file to nix.conf
+- move nix-daemon tmpfiles.d to nix-daemon
 
 * Sat Oct 25 2025 Jens Petersen <petersen@redhat.com> - 2.31.2-5
 - split nix-users from nix-daemon and drop nix-singleuser
