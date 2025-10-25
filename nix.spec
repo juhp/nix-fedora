@@ -277,7 +277,7 @@ LD_LIBRARY_PATH=%{buildroot}%{_libdir} %{buildroot}%{_bindir}/nix --help
 %files daemon
 %{_bindir}/nix-daemon
 %{_sysconfdir}/profile.d/nix-daemon.*sh
-%{_prefix}/lib/systemd/system/nix-daemon.*
+%{_unitdir}/nix-daemon.*
 
 
 %files devel
