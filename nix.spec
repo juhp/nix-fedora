@@ -205,14 +205,8 @@ cp %{SOURCE1} %{SOURCE2} %{buildroot}/etc/nix/
 mkdir -p %{buildroot}/nix/store
 mkdir -p %{buildroot}/nix/var/log/nix/drvs
 # make per-user directories
-for d in profiles gcroots;
-do
-  mkdir -p %{buildroot}/nix/var/nix/$d/per-user
-  chmod 1755 %{buildroot}/nix/var/nix/$d/per-user
-done
-for i in db temproots ; do
-  mkdir %{buildroot}/nix/var/nix/$i
-done
+mkdir -p %{buildroot}/nix/var/nix/{gcroots,profiles}/per-user
+mkdir %{buildroot}/nix/var/nix/{db,temproots}
 touch %{buildroot}/nix/var/nix/gc.lock
 
 install -p -D -m 0644 %{SOURCE4} %{buildroot}%{_sysusersdir}/nix-daemon.conf
