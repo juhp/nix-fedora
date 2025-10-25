@@ -10,7 +10,7 @@ Name:           nix
 # 2.32 needs boost >= 1.87 (https://bugzilla.redhat.com/show_bug.cgi?id=2406036)
 # (https://github.com/NixOS/nix/pull/14340)
 Version:        2.31.2
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        A purely functional package manager
 
 License:        LGPL-2.1-or-later
@@ -80,7 +80,7 @@ BuildRequires:  toml11-devel
 BuildRequires:  xz-devel
 Requires:       %{name}-libs%{?_isa} = %{version}-%{release}
 Recommends:     %{name}-daemon = %{version}-%{release}
-Recommends:     (%{name}-singleuser = %{version}-%{release} if (fedora-release-container or fedora-release-toolbx))
+Recommends:     %{name}-users = %{version}-%{release}
 %ifarch x86_64 aarch64 ppc64le
 Recommends:     busybox
 %endif
@@ -100,16 +100,14 @@ See the README.fedora.md file for setup instructions.
 Summary:        The nix daemon for multiuser mode
 BuildArch:      noarch
 Requires:       %{name} = %{version}-%{release}
-Conflicts:      %{name}-singleuser
+Requires:       %{name}-multiuser = %{version}-%{release}
 Conflicts:      fedora-release-container
 Conflicts:      fedora-release-coreos
 Conflicts:      fedora-release-ostree-desktop
 Conflicts:      fedora-release-toolbx
 
 %description daemon
-This package provides nix-daemon, associated files and multiuser setup.
-
-If you want single-user mode install the nix-singleuser package instead.
+This package provides nix-daemon and associated files.
 
 
 %package devel
@@ -131,23 +129,19 @@ The %{name}-doc package contains documentation files for %{name}.
 %endif
 
 
+%package        filesystem
+Summary:        Filesystem for %{name}
+BuildArch:      noarch
+
+%description    filesystem
+The package provides the /nix root directory for the nix package manager.
+
+
 %package libs
 Summary:        Runtime libraries for %{name}
 
 %description libs
 The package provides the the runtime libraries for %{name}.
-
-
-%package        singleuser
-Summary:        Single user mode nix
-BuildArch:      noarch
-Requires:       %{name} = %{version}-%{release}
-Conflicts:      %{name}-daemon
-
-%description    singleuser
-This package sets up a single-user mode nix.
-
-If you want multi-user mode install the nix-daemon package instead.
 
 
 %if %{with tests}
@@ -158,6 +152,16 @@ Requires:       %{name}%{?_isa} = %{version}-%{release}
 %description test
 This package provides the nix-test programs.
 %endif
+
+
+%package        users
+Summary:        Nix directories and sysusers setup
+BuildArch:      noarch
+Requires:       %{name} = %{version}-%{release}
+Requires:       %{name}-filesystem = %{version}-%{release}
+
+%description    users
+This package sets up the nix directories and sysusers for multiuser mode nix.
 
 
 %prep
@@ -227,11 +231,6 @@ LD_LIBRARY_PATH=%{buildroot}%{_libdir} %{buildroot}%{_bindir}/nix --help
 %endif
 
 
-%pre daemon
-%sysusers_create_package nix-daemon %SOURCE4
-%tmpfiles_create_package nix-filesystem %SOURCE5
-
-
 %post daemon
 %systemd_post nix-daemon.service
 
@@ -244,13 +243,12 @@ LD_LIBRARY_PATH=%{buildroot}%{_libdir} %{buildroot}%{_bindir}/nix --help
 %systemd_postun_with_restart nix-daemon.service
 
 
-%post singleuser
-if [ "$1" = 1 ]; then
-mkdir -p /nix/store
-mkdir -p /nix/var/log/nix/drvs
-mkdir -p /nix/var/nix/temproots
-mkdir -p /nix/var/nix/db
-fi
+%pre filesystem
+%tmpfiles_create_package nix-filesystem %SOURCE5
+
+
+%pre users
+%sysusers_create_package nix-daemon %SOURCE4
 
 
 %files
@@ -284,22 +282,6 @@ fi
 %{_bindir}/nix-daemon
 %{_sysconfdir}/profile.d/nix-daemon.*sh
 %{_prefix}/lib/systemd/system/nix-daemon.*
-%{_tmpfilesdir}/nix-daemon.conf
-# FHS Exception: https://pagure.io/fesco/issue/3473
-%{_tmpfilesdir}/nix-filesystem.conf
-%ghost %dir /nix/var
-%ghost %dir /nix/var/log
-%ghost %dir /nix/var/log/nix
-%attr(1775,root,%{nixbld_group}) /nix/store
-%attr(1775,root,%{nixbld_group}) %dir /nix/var/log/nix/drvs
-%dir %attr(775,root,%{nixbld_group}) /nix/var/nix
-%ghost %attr(0755,root,root) /nix/var/nix/builds
-%ghost %attr(0755,root,root) /nix/var/nix/daemon-socket
-%attr(775,root,%{nixbld_group}) /nix/var/nix/profiles
-%attr(775,root,%{nixbld_group}) /nix/var/nix/temproots
-%attr(775,root,%{nixbld_group}) /nix/var/nix/db
-%ghost %attr(664,root,%{nixbld_group}) /nix/var/nix/gc.lock
-%{_sysusersdir}/nix-daemon.conf
 
 
 %files devel
@@ -328,6 +310,12 @@ fi
 %endif
 
 
+%files filesystem
+# FHS Exception: https://pagure.io/fesco/issue/3473
+%{_tmpfilesdir}/nix-filesystem.conf
+%ghost %dir /nix
+
+
 %files libs
 %license COPYING
 %{_libdir}/libnixcmd.so.%{version}
@@ -345,22 +333,33 @@ fi
 %{_libdir}/libnixutilc.so.%{version}
 
 
-%files singleuser
-%ghost %dir /nix
-%ghost %dir /nix/store
-%ghost %dir /nix/var/log/nix/drvs
-%ghost %dir /nix/var/nix
-%ghost %dir /nix/var/nix/temproots
-%ghost %dir /nix/var/nix/db
-
-
 %if %{with tests}
 %files test
 %{_bindir}/nix*-test
 %endif
 
 
+%files users
+%{_tmpfilesdir}/nix-daemon.conf
+%ghost %dir /nix/var
+%ghost %dir /nix/var/log
+%ghost %dir /nix/var/log/nix
+%attr(1775,root,%{nixbld_group}) /nix/store
+%attr(1775,root,%{nixbld_group}) %dir /nix/var/log/nix/drvs
+%dir %attr(775,root,%{nixbld_group}) /nix/var/nix
+%ghost %attr(0755,root,root) /nix/var/nix/builds
+%ghost %attr(0755,root,root) /nix/var/nix/daemon-socket
+%attr(775,root,%{nixbld_group}) /nix/var/nix/profiles
+%attr(775,root,%{nixbld_group}) /nix/var/nix/temproots
+%attr(775,root,%{nixbld_group}) /nix/var/nix/db
+%ghost %attr(664,root,%{nixbld_group}) /nix/var/nix/gc.lock
+%{_sysusersdir}/nix-daemon.conf
+
+
 %changelog
+* Sat Oct 25 2025 Jens Petersen <petersen@redhat.com> - 2.31.2-5
+- split nix-users from nix-daemon and drop nix-singleuser
+
 * Fri Oct 24 2025 Jens Petersen <petersen@redhat.com> - 2.31.2-4
 - drop filesystem subpackage and ghost singleuser dirs
 - nix-daemon and nix-singleuser conflict with each other
