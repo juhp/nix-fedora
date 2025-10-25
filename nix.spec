@@ -10,7 +10,7 @@ Name:           nix
 # 2.32 needs boost >= 1.87 (https://bugzilla.redhat.com/show_bug.cgi?id=2406036)
 # (https://github.com/NixOS/nix/pull/14340)
 Version:        2.31.2
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        A purely functional package manager
 
 License:        LGPL-2.1-or-later
@@ -80,7 +80,7 @@ BuildRequires:  toml11-devel
 BuildRequires:  xz-devel
 Requires:       %{name}-libs%{?_isa} = %{version}-%{release}
 Recommends:     %{name}-daemon = %{version}-%{release}
-Recommends:     %{name}-users = %{version}-%{release}
+Recommends:     %{name}-system = %{version}-%{release}
 %ifarch x86_64 aarch64 ppc64le
 Recommends:     busybox
 %endif
@@ -100,7 +100,7 @@ See the README.fedora.md file for setup instructions.
 Summary:        The nix daemon for multiuser mode
 BuildArch:      noarch
 Requires:       %{name} = %{version}-%{release}
-Requires:       %{name}-multiuser = %{version}-%{release}
+Requires:       %{name}-system = %{version}-%{release}
 
 %description daemon
 This package provides nix-daemon and associated files.
@@ -150,14 +150,14 @@ This package provides the nix-test programs.
 %endif
 
 
-%package        users
+%package        system
 Summary:        Nix directories and sysusers setup
 BuildArch:      noarch
 Requires:       %{name} = %{version}-%{release}
 Requires:       %{name}-filesystem = %{version}-%{release}
 
-%description    users
-This package sets up the nix directories and sysusers for multiuser mode nix.
+%description    system
+This package sets up the nix directories and sysusers.
 
 
 %prep
@@ -243,7 +243,7 @@ LD_LIBRARY_PATH=%{buildroot}%{_libdir} %{buildroot}%{_bindir}/nix --help
 %tmpfiles_create_package nix-filesystem %SOURCE5
 
 
-%pre users
+%pre system
 %sysusers_create_package nix-daemon %SOURCE4
 
 
@@ -335,8 +335,9 @@ LD_LIBRARY_PATH=%{buildroot}%{_libdir} %{buildroot}%{_bindir}/nix --help
 %endif
 
 
-%files users
+%files system
 %{_tmpfilesdir}/nix-daemon.conf
+%{_sysusersdir}/nix-daemon.conf
 %ghost %dir /nix/var
 %ghost %dir /nix/var/log
 %ghost %dir /nix/var/log/nix
@@ -349,10 +350,12 @@ LD_LIBRARY_PATH=%{buildroot}%{_libdir} %{buildroot}%{_bindir}/nix --help
 %attr(775,root,%{nixbld_group}) /nix/var/nix/temproots
 %attr(775,root,%{nixbld_group}) /nix/var/nix/db
 %ghost %attr(664,root,%{nixbld_group}) /nix/var/nix/gc.lock
-%{_sysusersdir}/nix-daemon.conf
 
 
 %changelog
+* Sat Oct 25 2025 Jens Petersen <petersen@redhat.com> - 2.31.2-6
+- rename users subpackage to system
+
 * Sat Oct 25 2025 Jens Petersen <petersen@redhat.com> - 2.31.2-5
 - split nix-users from nix-daemon and drop nix-singleuser
 - drop all conflicts
