@@ -209,7 +209,7 @@ mkdir -p %{buildroot}/nix/var/nix/{gcroots,profiles}/per-user
 mkdir %{buildroot}/nix/var/nix/{db,temproots}
 touch %{buildroot}/nix/var/nix/gc.lock
 
-install -p -D -m 0644 %{SOURCE4} %{buildroot}%{_sysusersdir}/nix-daemon.conf
+install -p -D -m 0644 %{SOURCE4} %{buildroot}%{_sysusersdir}/nix.conf
 install -p -D -m 0644 %{SOURCE5} %{buildroot}%{_tmpfilesdir}/nix-filesystem.conf
 
 
@@ -238,7 +238,7 @@ LD_LIBRARY_PATH=%{buildroot}%{_libdir} %{buildroot}%{_bindir}/nix --help
 
 
 %pre system
-%sysusers_create_package nix-daemon %SOURCE4
+%sysusers_create_package nix-system %SOURCE4
 
 
 %files
@@ -332,7 +332,7 @@ LD_LIBRARY_PATH=%{buildroot}%{_libdir} %{buildroot}%{_bindir}/nix --help
 
 %files system
 %{_tmpfilesdir}/nix-daemon.conf
-%{_sysusersdir}/nix-daemon.conf
+%{_sysusersdir}/nix.conf
 %attr(1775,root,%{nixbld_group}) /nix/store
 %ghost %dir /nix/var
 %ghost %dir /nix/var/log
@@ -353,6 +353,7 @@ LD_LIBRARY_PATH=%{buildroot}%{_libdir} %{buildroot}%{_bindir}/nix --help
 * Sat Oct 25 2025 Jens Petersen <petersen@redhat.com> - 2.31.2-6
 - rename users subpackage to system
 - own a few more /nix/var/nix/ dirs
+- rename sysusers file to nix.conf
 
 * Sat Oct 25 2025 Jens Petersen <petersen@redhat.com> - 2.31.2-5
 - split nix-users from nix-daemon and drop nix-singleuser
