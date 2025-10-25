@@ -337,17 +337,16 @@ LD_LIBRARY_PATH=%{buildroot}%{_libdir} %{buildroot}%{_bindir}/nix --help
 
 %files system
 %{_sysusersdir}/nix.conf
-%attr(1775,root,%{nixbld_group}) /nix/store
-%ghost %dir /nix/var
-%ghost %dir /nix/var/log
-%ghost %dir /nix/var/log/nix
-%attr(1775,root,%{nixbld_group}) %dir /nix/var/log/nix/drvs
+%dir %attr(1775,root,%{nixbld_group}) /nix/store
+%dir /nix/var
+%dir /nix/var/log
+%dir /nix/var/log/nix
+%dir %attr(1775,root,%{nixbld_group}) /nix/var/log/nix/drvs
 %dir %attr(775,root,%{nixbld_group}) /nix/var/nix
-%ghost %attr(0755,root,root) /nix/var/nix/builds
-%attr(775,root,%{nixbld_group}) /nix/var/nix/db
-%ghost %attr(664,root,%{nixbld_group}) /nix/var/nix/gc.lock
-%dir %attr(755,root,root) /nix/var/nix/gcroots
-%dir %attr(1755,root,root) /nix/var/nix/gcroots/per-user
+%dir %attr(775,root,%{nixbld_group}) /nix/var/nix/db
+%attr(664,root,%{nixbld_group}) /nix/var/nix/gc.lock
+%dir %attr(775,root,%{nixbld_group}) /nix/var/nix/gcroots
+%dir %attr(1755,root,%{nixbld_group}) /nix/var/nix/gcroots/per-user
 %dir %attr(775,root,%{nixbld_group}) /nix/var/nix/profiles
 %dir %attr(1755,root,%{nixbld_group}) /nix/var/nix/profiles/per-user
 %attr(775,root,%{nixbld_group}) /nix/var/nix/temproots
@@ -356,7 +355,7 @@ LD_LIBRARY_PATH=%{buildroot}%{_libdir} %{buildroot}%{_bindir}/nix --help
 %changelog
 * Sat Oct 25 2025 Jens Petersen <petersen@redhat.com> - 2.31.2-6
 - rename users subpackage to system
-- own a few more /nix/var/nix/ dirs
+- improve /nix/var dirs ownership and perms
 - rename sysusers file to nix.conf
 - move nix-daemon tmpfiles.d to nix-daemon
 
