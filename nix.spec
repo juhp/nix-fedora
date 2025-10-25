@@ -212,7 +212,7 @@ mkdir -p %{buildroot}/nix/var/log/nix/drvs
 for d in profiles gcroots;
 do
   mkdir -p %{buildroot}/nix/var/nix/$d/per-user
-  chmod 1777 %{buildroot}/nix/var/nix/$d/per-user
+  chmod 1755 %{buildroot}/nix/var/nix/$d/per-user
 done
 for i in db temproots ; do
   mkdir %{buildroot}/nix/var/nix/$i
