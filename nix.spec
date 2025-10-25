@@ -278,6 +278,7 @@ LD_LIBRARY_PATH=%{buildroot}%{_libdir} %{buildroot}%{_bindir}/nix --help
 %{_bindir}/nix-daemon
 %{_sysconfdir}/profile.d/nix-daemon.*sh
 %{_unitdir}/nix-daemon.*
+%ghost %attr(0755,root,root) /nix/var/nix/daemon-socket
 
 
 %files devel
@@ -345,7 +346,6 @@ LD_LIBRARY_PATH=%{buildroot}%{_libdir} %{buildroot}%{_bindir}/nix --help
 %attr(1775,root,%{nixbld_group}) %dir /nix/var/log/nix/drvs
 %dir %attr(775,root,%{nixbld_group}) /nix/var/nix
 %ghost %attr(0755,root,root) /nix/var/nix/builds
-%ghost %attr(0755,root,root) /nix/var/nix/daemon-socket
 %attr(775,root,%{nixbld_group}) /nix/var/nix/profiles
 %attr(775,root,%{nixbld_group}) /nix/var/nix/temproots
 %attr(775,root,%{nixbld_group}) /nix/var/nix/db
