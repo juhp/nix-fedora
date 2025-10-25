@@ -22,13 +22,13 @@ This mode works in rootless containers without systemd.
 
 Run:
 ```
-$ sudo dnf install nix-user
+$ sudo dnf install nix nix-system --exclude nix-daemon
 $ sudo usermod -G nixbld -a $USER
 ```
 
 Alternatively you can try this hack to have the nix store within your homedir:
 ```
-$ dnf install nix nix-filesystem --exclude nix-users
+$ dnf install nix nix-filesystem --exclude nix-daemon --exclude nix-system
 $ sudo ln -s ~/.local/share/nix/root/nix/store /nix/
 ```
 (the symlink is needed for interactive bash - otherwise one gets: eg
