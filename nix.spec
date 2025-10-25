@@ -101,8 +101,6 @@ Summary:        The nix daemon for multiuser mode
 BuildArch:      noarch
 Requires:       %{name} = %{version}-%{release}
 Requires:       %{name}-multiuser = %{version}-%{release}
-Conflicts:      fedora-release-container
-Conflicts:      fedora-release-toolbx
 
 %description daemon
 This package provides nix-daemon and associated files.
@@ -357,7 +355,7 @@ LD_LIBRARY_PATH=%{buildroot}%{_libdir} %{buildroot}%{_bindir}/nix --help
 %changelog
 * Sat Oct 25 2025 Jens Petersen <petersen@redhat.com> - 2.31.2-5
 - split nix-users from nix-daemon and drop nix-singleuser
-- drop the nix-daemon ostree explicit conflicts
+- drop all conflicts
 
 * Fri Oct 24 2025 Jens Petersen <petersen@redhat.com> - 2.31.2-4
 - drop filesystem subpackage and ghost singleuser dirs

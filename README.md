@@ -16,9 +16,6 @@ or
 $ sudo systemctl start nix-daemon
 ```
 
-Note running nix-daemon from inside toolbox may be unsafe for the host system.
-So nix-daemon currently conflicts with fedora-release-toolbx.
-
 ## Single-user mode without nix-daemon
 
 This mode works in rootless containers without systemd.
