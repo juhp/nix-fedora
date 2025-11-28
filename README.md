@@ -1,3 +1,5 @@
+***This repo is obsoleted by <https://src.fedoraproject.org/rpms/nix>***
+
 # How to setup nix on Fedora.
 
 Nix has two different modes of operation:
